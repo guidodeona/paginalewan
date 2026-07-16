@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-labelledby="t3 d3">
+  <title id="t3">Placeholder — artículo de Economía</title>
+  <desc id="d3">Imagen de reemplazo, 400×240 px</desc>
+  <defs>
+    <linearGradient id="ge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA5E1F"/>
+      <stop offset="100%" stop-color="#00B7EB"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#ge)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9">
+    <path d="M150 145v18h4l24-18v-4l-24 4z"/>
+    <path d="M150 145l24-18 12 9 24-18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M210 118a17 17 0 010 28" stroke-linecap="round"/>
+  </g>
+  <text x="200" y="205" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.9">IMAGEN PLACEHOLDER 400×240</text>
+</svg>

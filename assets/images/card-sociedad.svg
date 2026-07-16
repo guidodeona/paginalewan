@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-labelledby="t2 d2">
+  <title id="t2">Placeholder — artículo de Sociedad</title>
+  <desc id="d2">Imagen de reemplazo, 400×240 px</desc>
+  <defs>
+    <linearGradient id="gs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00B7EB"/>
+      <stop offset="100%" stop-color="#1b3a27"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#gs)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9">
+    <circle cx="200" cy="120" r="34"/>
+    <path d="M154 120h92M200 86c11 11 14 24 14 34s-3 23-14 34c-11-11-14-24-14-34s3-23 14-34z"/>
+  </g>
+  <text x="200" y="205" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.9">IMAGEN PLACEHOLDER 400×240</text>
+</svg>

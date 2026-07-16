@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-labelledby="t1 d1">
+  <title id="t1">Placeholder — artículo de Política</title>
+  <desc id="d1">Imagen de reemplazo, 400×240 px</desc>
+  <defs>
+    <linearGradient id="gp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ED25B2"/>
+      <stop offset="100%" stop-color="#EA5E1F"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#gp)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9">
+    <path d="M150 155l6-24 60-60 20 20-60 60-24 6z" stroke-linejoin="round"/>
+    <path d="M196 91l20 20" />
+  </g>
+  <text x="200" y="205" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.9">IMAGEN PLACEHOLDER 400×240</text>
+</svg>

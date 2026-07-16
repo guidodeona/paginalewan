@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-labelledby="t4 d4">
+  <title id="t4">Placeholder — artículo de Juventudes</title>
+  <desc id="d4">Imagen de reemplazo, 400×240 px</desc>
+  <defs>
+    <linearGradient id="gj" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ED25B2"/>
+      <stop offset="100%" stop-color="#00B7EB"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#gj)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9">
+    <circle cx="175" cy="105" r="16"/>
+    <circle cx="225" cy="112" r="12"/>
+    <path d="M150 165c0-18 12-32 25-32s25 14 25 32M205 165c0-14 10-26 25-26" stroke-linecap="round"/>
+  </g>
+  <text x="200" y="205" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.9">IMAGEN PLACEHOLDER 400×240</text>
+</svg>
