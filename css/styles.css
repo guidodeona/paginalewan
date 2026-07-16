@@ -181,10 +181,8 @@ body {
 
 .header-inner { height: 100%; display: flex; align-items: center; gap: 1.5rem; }
 
-.logo { display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
-.logo-mark { display: inline-flex; }
-.logo-text { font-weight: 900; font-size: 1.15rem; letter-spacing: -0.01em; line-height: 1.05; color: var(--color-negro); }
-.logo-sub { display: block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.16em; color: var(--color-rosa); }
+.logo { display: flex; align-items: center; flex-shrink: 0; }
+.logo-lockup { height: 38px; width: auto; display: block; }
 
 .main-nav { flex: 1; }
 .main-nav > ul { display: flex; align-items: center; gap: clamp(1rem, 2vw, 2rem); flex-wrap: wrap; }
