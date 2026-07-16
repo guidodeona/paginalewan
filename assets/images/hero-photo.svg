@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-labelledby="title desc">
+  <title id="title">Placeholder — Foto principal del hero</title>
+  <desc id="desc">Imagen de reemplazo, 600×500 px</desc>
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00B7EB"/>
+      <stop offset="55%" stop-color="#6C6FD8"/>
+      <stop offset="100%" stop-color="#ED2E87"/>
+    </linearGradient>
+    <pattern id="heroDots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="2" fill="#FFFFFF" opacity="0.16"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="500" fill="url(#heroGrad)"/>
+  <rect width="600" height="500" fill="url(#heroDots)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85">
+    <rect x="220" y="190" width="160" height="120" rx="10"/>
+    <circle cx="270" cy="230" r="14"/>
+    <path d="M220 300 L275 250 L320 285 L360 240 L380 265" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="300" y="360" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.95">IMAGEN PLACEHOLDER</text>
+  <text x="300" y="386" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.85">600 × 500 · reemplazar por foto propia</text>
+</svg>

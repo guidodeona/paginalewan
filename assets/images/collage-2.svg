@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" role="img" aria-labelledby="title2 desc2">
+  <title id="title2">Placeholder — Foto de paisaje</title>
+  <desc id="desc2">Imagen de reemplazo, 260×220 px</desc>
+  <defs>
+    <linearGradient id="c2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00B7EB"/>
+      <stop offset="100%" stop-color="#202020"/>
+    </linearGradient>
+  </defs>
+  <rect width="260" height="220" fill="url(#c2Grad)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.85">
+    <circle cx="200" cy="55" r="20"/>
+    <path d="M0 150 L60 110 L110 140 L160 95 L260 150" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="130" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.95">PLACEHOLDER</text>
+  <text x="130" y="202" font-family="Arial, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle" opacity="0.85">260 × 220</text>
+</svg>

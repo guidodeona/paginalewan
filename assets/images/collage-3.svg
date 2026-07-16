@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" role="img" aria-labelledby="title3 desc3">
+  <title id="title3">Placeholder — Foto de arte urbano</title>
+  <desc id="desc3">Imagen de reemplazo, 260×220 px</desc>
+  <defs>
+    <linearGradient id="c3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA5E1F"/>
+      <stop offset="50%" stop-color="#ED2E87"/>
+      <stop offset="100%" stop-color="#00B7EB"/>
+    </linearGradient>
+  </defs>
+  <rect width="260" height="220" fill="url(#c3Grad)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.85">
+    <rect x="70" y="60" width="120" height="90" rx="8"/>
+    <path d="M70 130 L110 95 L140 120 L165 90 L190 115" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="150" cy="80" r="10"/>
+  </g>
+  <text x="130" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.95">PLACEHOLDER</text>
+  <text x="130" y="202" font-family="Arial, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle" opacity="0.85">260 × 220</text>
+</svg>

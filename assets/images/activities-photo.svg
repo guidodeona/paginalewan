@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 520" role="img" aria-labelledby="title4 desc4">
+  <title id="title4">Placeholder — Foto de comunidad</title>
+  <desc id="desc4">Imagen de reemplazo, 380×520 px</desc>
+  <defs>
+    <linearGradient id="c4Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00B7EB"/>
+      <stop offset="100%" stop-color="#202020"/>
+    </linearGradient>
+  </defs>
+  <rect width="380" height="520" fill="url(#c4Grad)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.9">
+    <path d="M110 380 L110 300" stroke-linecap="round"/>
+    <path d="M160 380 L160 270" stroke-linecap="round"/>
+    <path d="M210 380 L210 290" stroke-linecap="round"/>
+    <path d="M260 380 L260 260" stroke-linecap="round"/>
+    <circle cx="110" cy="290" r="14"/>
+    <circle cx="160" cy="260" r="14"/>
+    <circle cx="210" cy="280" r="14"/>
+    <circle cx="260" cy="250" r="14"/>
+  </g>
+  <text x="190" y="440" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.95">IMAGEN PLACEHOLDER</text>
+  <text x="190" y="464" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.85">380 × 520</text>
+</svg>
