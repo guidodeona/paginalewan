@@ -74,7 +74,7 @@ h1, h2, h3,
   font-kerning: none;
 }
 
-.brush-word, .main-nav a, .dropdown-toggle, .logo-lockup text {
+.brush-word, .main-nav a, .dropdown-toggle {
   font-kerning: none;
 }
 
@@ -201,6 +201,7 @@ h1, h2, h3,
 
 .logo { display: flex; align-items: center; flex-shrink: 0; }
 .logo-lockup { height: 38px; width: auto; display: block; }
+.logo-lockup--stacked { height: 160px; }
 
 .main-nav { flex: 1; }
 .main-nav > ul { display: flex; align-items: center; gap: clamp(1rem, 2vw, 2rem); flex-wrap: wrap; }
