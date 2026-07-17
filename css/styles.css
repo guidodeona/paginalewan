@@ -496,6 +496,40 @@ h1, h2, h3,
 .article-body p { color: var(--color-text); font-size: 1.05rem; line-height: 1.75; margin-bottom: 1.5rem; }
 .article-body p:first-child { font-size: 1.15rem; }
 
+.article-body h2 {
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+  line-height: 1.25;
+  margin-block: 0 1.25rem;
+}
+
+.article-divider { display: flex; align-items: center; justify-content: center; margin-block: 2.75rem; }
+
+.pull-quote {
+  margin-block: 2.25rem; padding-left: 1.5rem;
+  border-left: 4px solid var(--color-rosa);
+  font-family: var(--font-heading); font-weight: 600;
+  font-size: 1.3rem; line-height: 1.45;
+  color: var(--color-rosa);
+}
+
+.stat-box { background: var(--color-celeste-tint); border-radius: var(--radius-md); padding: 1.5rem 1.75rem; margin-block: 2.25rem; }
+.stat-box h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-celeste); margin-bottom: 1rem; }
+.stat-box ul { display: flex; flex-direction: column; gap: 0.65rem; }
+.stat-box li { color: var(--color-text); font-size: 0.98rem; line-height: 1.5; padding-left: 1.3rem; position: relative; }
+.stat-box li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 7px; height: 7px; border-radius: 50%; background: var(--color-celeste); }
+
+.final-quote {
+  font-family: var(--font-heading); font-weight: 600;
+  font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.3; text-align: center;
+  color: var(--color-rosa);
+  margin-block: 2.75rem; padding-block: 2rem;
+  border-block: 2px solid var(--color-rosa-tint);
+}
+
+.article-authors { margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid rgba(27, 58, 39, 0.12); }
+.article-authors h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); opacity: 0.75; margin-bottom: 0.4rem; }
+.article-authors p { color: var(--color-text); font-weight: 600; font-size: 1rem; margin-bottom: 0; }
+
 .article-share {
   max-width: 680px; margin: 0 auto clamp(2.5rem, 5vw, 4rem); padding-top: 2rem;
   border-top: 1px solid rgba(27, 58, 39, 0.12);
