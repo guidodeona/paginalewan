@@ -82,20 +82,4 @@
   } else {
     revealEls.forEach((el) => el.classList.add('is-visible'));
   }
-
-  // Newsletter (placeholder: sin backend real)
-  const newsletterForm = document.getElementById('newsletterForm');
-  const feedback = document.getElementById('newsletterFeedback');
-  if (newsletterForm && feedback) {
-    newsletterForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const email = newsletterForm.querySelector('#newsletterEmail');
-      if (email && email.checkValidity()) {
-        feedback.textContent = '¡Gracias por sumarte! Pronto vas a recibir novedades.';
-        newsletterForm.reset();
-      } else {
-        feedback.textContent = 'Ingresá un correo electrónico válido.';
-      }
-    });
-  }
 })();
