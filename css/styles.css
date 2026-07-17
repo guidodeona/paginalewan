@@ -336,7 +336,10 @@ h1, h2, h3,
   position: absolute; border-radius: var(--radius-md); overflow: hidden;
   box-shadow: var(--shadow-card); background: var(--color-blanco); padding: 8px;
 }
-.collage-item img { border-radius: calc(var(--radius-md) - 6px); }
+.collage-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: calc(var(--radius-md) - 6px);
+}
 .collage-top { top: 0; left: 6%; width: 88%; height: 52%; transform: rotate(-1.5deg); z-index: 2; }
 .collage-bl { bottom: 0; left: 0; width: 46%; height: 44%; transform: rotate(2deg); z-index: 1; }
 .collage-br { bottom: 0; right: 0; width: 46%; height: 44%; transform: rotate(-2deg); z-index: 1; }
@@ -464,6 +467,41 @@ h1, h2, h3,
   border-top: 1px solid #e6e6e6; padding-block: 1.5rem;
   font-size: 0.85rem; color: var(--text-muted);
 }
+
+/* ==========================================================================
+   Article page
+   ========================================================================== */
+.article-hero {
+  padding-block-start: calc(var(--header-h) + clamp(2rem, 5vw, 3.5rem));
+  padding-block-end: clamp(2rem, 4vw, 3rem);
+  background: var(--color-bg);
+}
+.article-hero-inner { max-width: 760px; margin-inline: auto; }
+.article-meta { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.25rem; }
+.article-title { font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.15; margin-bottom: 1.1rem; }
+.article-lede { color: var(--text-muted); font-size: 1.1rem; max-width: 62ch; }
+
+.article-cover-wrap {
+  max-width: 1000px; margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.article-cover {
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lift);
+  aspect-ratio: 16 / 8;
+}
+.article-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.article-body-section { background: var(--color-bg); padding-block: clamp(2.5rem, 5vw, 4rem); }
+.article-body { max-width: 680px; margin-inline: auto; }
+.article-body p { color: var(--color-text); font-size: 1.05rem; line-height: 1.75; margin-bottom: 1.5rem; }
+.article-body p:first-child { font-size: 1.15rem; }
+
+.article-share {
+  max-width: 680px; margin: 0 auto clamp(2.5rem, 5vw, 4rem); padding-top: 2rem;
+  border-top: 1px solid rgba(27, 58, 39, 0.12);
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+.article-share span { font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem; color: var(--color-text); }
 
 /* ==========================================================================
    Responsive
