@@ -923,6 +923,7 @@ body.lightbox-open { overflow: hidden; }
   color: var(--text-muted);
 }
 .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+.auth-tabs[hidden] { display: none; }
 .auth-tab {
   font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem;
   padding: 0.5rem 0.25rem; color: var(--text-muted); border-bottom: 2px solid transparent;
@@ -939,6 +940,16 @@ body.lightbox-open { overflow: hidden; }
 .auth-form .comment-form-row + .comment-form-row { margin-top: 0.85rem; }
 .auth-form .comment-form-feedback { margin-block: 0.75rem; }
 .auth-form > .btn { width: 100%; justify-content: center; margin-top: 0.25rem; }
+.auth-forgot-link {
+  display: block; width: 100%; text-align: center; margin-top: 0.9rem;
+  font-size: 0.85rem; font-weight: 600; color: var(--color-celeste-text);
+}
+.auth-forgot-link:hover { text-decoration: underline; }
+.auth-forgot-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+.reset-card { max-width: 420px; margin-inline: auto; position: static; }
+.reset-card .media-empty { margin-bottom: 1.25rem; }
+.reset-card > .btn { width: 100%; justify-content: center; }
 
 .auth-user-menu { position: relative; }
 .auth-user-trigger {

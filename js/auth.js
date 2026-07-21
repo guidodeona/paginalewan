@@ -83,6 +83,7 @@
           <div class="comment-form-row"><input type="password" name="password" placeholder="Contraseña" required autocomplete="current-password"></div>
           <p class="comment-form-feedback" data-auth-feedback="login" role="status" aria-live="polite"></p>
           <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+          <button type="button" class="auth-forgot-link" data-auth-forgot-trigger>¿Olvidaste tu contraseña?</button>
         </form>
 
         <form class="auth-form" data-auth-form="signup" hidden>
@@ -91,6 +92,14 @@
           <div class="comment-form-row"><input type="password" name="password" placeholder="Contraseña (mínimo 8 caracteres)" minlength="8" required autocomplete="new-password"></div>
           <p class="comment-form-feedback" data-auth-feedback="signup" role="status" aria-live="polite"></p>
           <button type="submit" class="btn btn-primary">Crear cuenta</button>
+        </form>
+
+        <form class="auth-form" data-auth-form="forgot" hidden>
+          <p class="auth-forgot-desc">Ingresá tu email y te mandamos un link para elegir una contraseña nueva.</p>
+          <div class="comment-form-row"><input type="email" name="email" placeholder="Tu email" required autocomplete="email"></div>
+          <p class="comment-form-feedback" data-auth-feedback="forgot" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary">Enviar link de recuperación</button>
+          <button type="button" class="auth-forgot-link" data-auth-back-trigger>← Volver a iniciar sesión</button>
         </form>
       </div>
     `;
@@ -128,6 +137,7 @@
     const closeModal = () => { modal.hidden = true; };
 
     function switchTab(tab) {
+      modal.querySelector('.auth-tabs').hidden = tab === 'forgot';
       modal.querySelectorAll('[data-auth-tab]').forEach((btn) => {
         btn.setAttribute('aria-selected', String(btn.dataset.authTab === tab));
       });
@@ -143,6 +153,8 @@
     modal.querySelectorAll('[data-auth-tab]').forEach((btn) => {
       btn.addEventListener('click', () => switchTab(btn.dataset.authTab));
     });
+    modal.querySelector('[data-auth-forgot-trigger]').addEventListener('click', () => switchTab('forgot'));
+    modal.querySelector('[data-auth-back-trigger]').addEventListener('click', () => switchTab('login'));
 
     modal.querySelector('[data-auth-form="login"]').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -172,6 +184,20 @@
       });
       if (error) { feedback.textContent = translateAuthError(error); return; }
       feedback.textContent = '¡Listo! Si tu proyecto pide confirmación por email, revisá tu casilla antes de iniciar sesión.';
+      form.reset();
+    });
+
+    modal.querySelector('[data-auth-form="forgot"]').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const feedback = modal.querySelector('[data-auth-feedback="forgot"]');
+      feedback.textContent = '';
+      const email = form.email.value.trim();
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: BASE_PATH + 'restablecer-contrasena.html',
+      });
+      if (error) { feedback.textContent = translateAuthError(error); return; }
+      feedback.textContent = 'Listo, revisá tu correo. El link para elegir una contraseña nueva vale por un tiempo limitado.';
       form.reset();
     });
 
@@ -206,6 +232,7 @@
 
   function translateAuthError(error) {
     const msg = (error && error.message) || '';
+    if (error && error.status === 429) return 'Demasiados intentos. Esperá un momento y volvé a intentar.';
     if (/already registered/i.test(msg)) return 'Ese email ya tiene una cuenta. Probá iniciar sesión.';
     if (/invalid login credentials/i.test(msg)) return 'Email o contraseña incorrectos.';
     if (/password should be at least/i.test(msg)) return 'La contraseña es demasiado corta.';
