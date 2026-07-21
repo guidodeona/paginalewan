@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('activemos-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Soberanía o remate: las leyes de la entrega — Activemos Joven</title>
 <meta name="description" content="Un recorrido por las leyes y proyectos que generan preocupación sobre el control de nuestros recursos, territorio y futuro.">
@@ -86,7 +87,7 @@
 <header class="site-header" id="site-header">
   <div class="container header-inner">
     <a href="../index.html#inicio" class="logo" aria-label="Activemos Joven — inicio">
-      <img class="logo-lockup" src="../assets/icons/logo-activemos-joven.png" alt="Activemos Joven" width="2925" height="819">
+      <img class="logo-lockup" src="../assets/icons/logo-activemos-joven.png" alt="Activemos Joven" width="953" height="263">
     </a>
 
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú de navegación">
@@ -103,13 +104,13 @@
             <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
           </button>
           <ul class="dropdown" id="dropdownTematicas">
-            <li><a href="../index.html#tematicas">Política</a></li>
-            <li><a href="../index.html#tematicas">Sociedad</a></li>
-            <li><a href="../index.html#tematicas">Economía</a></li>
-            <li><a href="../index.html#tematicas">Juventudes</a></li>
+            <li><a href="../tematicas/politica.html">Política</a></li>
+            <li><a href="../tematicas/sociedad.html">Sociedad</a></li>
+            <li><a href="../tematicas/economia.html">Economía</a></li>
+            <li><a href="../tematicas/juventudes.html">Juventudes</a></li>
           </ul>
         </li>
-        <li><a href="../index.html#actividades">Actividades</a></li>
+        <li><a href="../actividades.html">Actividades</a></li>
         <li class="has-dropdown">
           <button type="button" class="dropdown-toggle" aria-expanded="false" aria-controls="dropdownRecursos">
             Recursos
@@ -119,7 +120,7 @@
             <li><a href="../index.html#">Materiales</a></li>
             <li><a href="../index.html#">Guías</a></li>
             <li><a href="../index.html#">Noticias</a></li>
-            <li><a href="../index.html#">Multimedia</a></li>
+            <li><a href="../multimedia.html">Multimedia</a></li>
           </ul>
         </li>
         <li><a href="../index.html#contacto">Contacto</a></li>
@@ -134,6 +135,11 @@
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5l6 2.5-6 2.5z" fill="currentColor"/></svg>
       </a>
     </div>
+
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
   </div>
 </header>
 
@@ -152,9 +158,10 @@
           <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true" class="icon-flip"><path d="M1 5h11.5M8 1l4.5 4L8 9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Volver a Abramos debate
         </a>
-        <div class="article-meta">
+        <div class="article-meta" data-article-id="soberania-o-remate" data-reading-minutes="5">
           <span class="card-tag card-tag--pink">Política</span>
           <span class="card-date">16 jul 2026</span>
+          <span class="article-meta-extra"></span>
         </div>
         <h1 class="article-title">Soberanía o remate: las leyes de la entrega</h1>
         <p class="article-lede">Un recorrido por las leyes y proyectos que generan preocupación sobre el control de nuestros recursos, territorio y futuro.</p>
@@ -269,13 +276,32 @@
       </div>
     </div>
   </article>
+
+  <section class="comments-section" id="comentarios" data-comments-article="soberania-o-remate">
+    <div class="container comments-container">
+      <div class="comments-head">
+        <h2 class="comments-title">Comentarios <span class="comments-count" data-comments-count>0</span></h2>
+        <label class="comments-sort">
+          Ordenar por
+          <select data-comments-sort>
+            <option value="newest">Más recientes</option>
+            <option value="liked">Más te gusta</option>
+          </select>
+        </label>
+      </div>
+
+      <div data-comment-form-mount></div>
+
+      <ol class="comments-list" data-comments-list></ol>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer" id="contacto">
   <div class="container footer-top">
     <div class="footer-brand">
       <a href="../index.html#inicio" class="logo" aria-label="Activemos Joven — inicio">
-        <img class="logo-lockup logo-lockup--stacked" src="../assets/icons/logo-activemos-joven-stacked.png" alt="Activemos Joven" width="329" height="229">
+        <img class="logo-lockup logo-lockup--stacked" src="../assets/icons/logo-activemos-joven-stacked.png" alt="Activemos Joven" width="953" height="263">
       </a>
     </div>
 
@@ -285,7 +311,7 @@
         <li><a href="../index.html#inicio">Inicio</a></li>
         <li><a href="../index.html#nosotros">Somos</a></li>
         <li><a href="../index.html#tematicas">Abramos debate</a></li>
-        <li><a href="../index.html#actividades">Actividades</a></li>
+        <li><a href="../actividades.html">Actividades</a></li>
         <li><a href="../index.html#">Recursos</a></li>
         <li><a href="../index.html#contacto">Contacto</a></li>
       </ul>
@@ -297,7 +323,7 @@
         <li><a href="../index.html#">Materiales</a></li>
         <li><a href="../index.html#">Guías</a></li>
         <li><a href="../index.html#">Noticias</a></li>
-        <li><a href="../index.html#">Multimedia</a></li>
+        <li><a href="../multimedia.html">Multimedia</a></li>
       </ul>
     </nav>
 
@@ -324,6 +350,12 @@
   </div>
 </footer>
 
+<script src="../js/theme.js" defer></script>
+<script src="../js/supabase-config.js" defer></script>
+<script src="../js/vendor/supabase.js" defer></script>
+<script src="../js/auth.js" defer></script>
+<script src="../js/stats.js" defer></script>
+<script src="../js/comments.js" defer></script>
 <script src="../js/app.js" defer></script>
 </body>
 </html>

@@ -13,6 +13,21 @@
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // Boton volver arriba
+  const backToTop = document.createElement('button');
+  backToTop.type = 'button';
+  backToTop.className = 'back-to-top';
+  backToTop.setAttribute('aria-label', 'Volver arriba');
+  backToTop.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.body.appendChild(backToTop);
+  const onScrollBackToTop = () => backToTop.classList.toggle('is-visible', window.scrollY > 400);
+  document.addEventListener('scroll', onScrollBackToTop, { passive: true });
+  onScrollBackToTop();
+  backToTop.addEventListener('click', () => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+  });
+
   // Menú móvil
   const navToggle = document.getElementById('navToggle');
   const mainNav = document.getElementById('mainNav');

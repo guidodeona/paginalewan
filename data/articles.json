@@ -1,0 +1,16 @@
+{
+  "articles": [
+    {
+      "id": "soberania-o-remate",
+      "url": "articulos/soberania-o-remate.html",
+      "title": "Soberanía o remate: las leyes de la entrega",
+      "excerpt": "Un recorrido por las leyes y proyectos que generan preocupación sobre el control de nuestros recursos, territorio y futuro.",
+      "image": "mapa.jpeg",
+      "category": "Política",
+      "categoryColor": "pink",
+      "authors": ["Victoria Musto", "Enzo Rocca"],
+      "publishDate": "2026-07-16",
+      "readingMinutes": 5
+    }
+  ]
+}

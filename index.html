@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('activemos-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activemos Joven — La política también puede ser nuestra</title>
 <meta name="description" content="Espacio de jóvenes de Santa Fe comprometidos con una política cercana, participativa y transformadora. Sumate a debatir, proponer y construir el futuro que queremos.">
@@ -75,7 +76,7 @@
 <header class="site-header" id="site-header">
   <div class="container header-inner">
     <a href="#inicio" class="logo" aria-label="Activemos Joven — inicio">
-      <img class="logo-lockup" src="assets/icons/logo-activemos-joven.png" alt="Activemos Joven" width="2925" height="819">
+      <img class="logo-lockup" src="assets/icons/logo-activemos-joven.png" alt="Activemos Joven" width="953" height="263">
     </a>
 
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú de navegación">
@@ -92,13 +93,13 @@
             <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
           </button>
           <ul class="dropdown" id="dropdownTematicas">
-            <li><a href="#tematicas">Política</a></li>
-            <li><a href="#tematicas">Sociedad</a></li>
-            <li><a href="#tematicas">Economía</a></li>
-            <li><a href="#tematicas">Juventudes</a></li>
+            <li><a href="tematicas/politica.html">Política</a></li>
+            <li><a href="tematicas/sociedad.html">Sociedad</a></li>
+            <li><a href="tematicas/economia.html">Economía</a></li>
+            <li><a href="tematicas/juventudes.html">Juventudes</a></li>
           </ul>
         </li>
-        <li><a href="#actividades">Actividades</a></li>
+        <li><a href="actividades.html">Actividades</a></li>
         <li class="has-dropdown">
           <button type="button" class="dropdown-toggle" aria-expanded="false" aria-controls="dropdownRecursos">
             Recursos
@@ -108,7 +109,7 @@
             <li><a href="#">Materiales</a></li>
             <li><a href="#">Guías</a></li>
             <li><a href="#">Noticias</a></li>
-            <li><a href="#">Multimedia</a></li>
+            <li><a href="multimedia.html">Multimedia</a></li>
           </ul>
         </li>
         <li><a href="#contacto">Contacto</a></li>
@@ -123,6 +124,11 @@
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5l6 2.5-6 2.5z" fill="currentColor"/></svg>
       </a>
     </div>
+
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
   </div>
 </header>
 
@@ -165,7 +171,7 @@
       </div>
     </div>
     <svg class="torn-paper" viewBox="0 0 1400 60" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0,0 L1400,0 L1400,30 L1365,45 L1330,25 L1295,50 L1260,20 L1225,42 L1190,15 L1155,48 L1120,22 L1085,40 L1050,12 L1015,46 L980,28 L945,50 L910,18 L875,44 L840,24 L805,48 L770,14 L735,42 L700,26 L665,50 L630,16 L595,44 L560,22 L525,48 L490,18 L455,42 L420,26 L385,50 L350,14 L315,44 L280,20 L245,46 L210,24 L175,48 L140,16 L105,42 L70,22 L35,48 L0,20 Z" fill="#F4F2E9"/>
+      <path d="M0,0 L1400,0 L1400,30 L1365,45 L1330,25 L1295,50 L1260,20 L1225,42 L1190,15 L1155,48 L1120,22 L1085,40 L1050,12 L1015,46 L980,28 L945,50 L910,18 L875,44 L840,24 L805,48 L770,14 L735,42 L700,26 L665,50 L630,16 L595,44 L560,22 L525,48 L490,18 L455,42 L420,26 L385,50 L350,14 L315,44 L280,20 L245,46 L210,24 L175,48 L140,16 L105,42 L70,22 L35,48 L0,20 Z" class="fill-bg"/>
     </svg>
   </section>
 
@@ -203,6 +209,11 @@
         <h2 class="section-heading"><span class="pre">ABRAMOS</span><span class="brush-word brush-word--sm">DEBATE</span></h2>
         <p>Una colección de artículos de opinión, análisis e investigación, escritos por las juventudes de ACTIVEMOS; para comprender la realidad, debatir con argumentos y construir nuevas miradas. </p>
         <a href="#" class="btn btn-outline-pink">Ver todos los artículos <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true"><path d="M1 5h11.5M8 1l4.5 4L8 9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+
+        <div class="trending-widget">
+          <h3 class="trending-heading">Más leídos</h3>
+          <ol class="trending-list" data-trending-list></ol>
+        </div>
       </div>
 
       <div class="topics-cards">
@@ -238,13 +249,13 @@
           </li>
         </ul>
 
-        <a href="#" class="btn btn-outline-pink">Ver calendario completo <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true"><path d="M1 5h11.5M8 1l4.5 4L8 9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="actividades.html" class="btn btn-outline-pink">Ver calendario completo <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true"><path d="M1 5h11.5M8 1l4.5 4L8 9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
 
       <div class="activities-media reveal">
         <div class="activities-image-wrap">
           <svg class="torn-paper torn-paper--top" viewBox="0 0 380 40" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0,40 L0,10 L20,25 L40,5 L60,22 L80,2 L100,20 L120,4 L140,24 L160,8 L180,26 L200,6 L220,22 L240,4 L260,24 L280,8 L300,22 L320,4 L340,20 L360,6 L380,18 L380,40 Z" fill="#F4F2E9"/>
+            <path d="M0,40 L0,10 L20,25 L40,5 L60,22 L80,2 L100,20 L120,4 L140,24 L160,8 L180,26 L200,6 L220,22 L240,4 L260,24 L280,8 L300,22 L320,4 L340,20 L360,6 L380,18 L380,40 Z" class="fill-bg"/>
           </svg>
           <img src="manos2.jpeg" alt="Manos de jóvenes participando en comunidad" width="408" height="728" loading="lazy">
         </div>
@@ -273,7 +284,7 @@
   <div class="container footer-top">
     <div class="footer-brand">
       <a href="#inicio" class="logo" aria-label="Activemos Joven — inicio">
-        <img class="logo-lockup logo-lockup--stacked" src="assets/icons/logo-activemos-joven-stacked.png" alt="Activemos Joven" width="329" height="229">
+        <img class="logo-lockup logo-lockup--stacked" src="assets/icons/logo-activemos-joven-stacked.png" alt="Activemos Joven" width="953" height="263">
       </a>
     </div>
 
@@ -283,7 +294,7 @@
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#nosotros">Somos</a></li>
         <li><a href="#tematicas">Abramos debate</a></li>
-        <li><a href="#actividades">Actividades</a></li>
+        <li><a href="actividades.html">Actividades</a></li>
         <li><a href="#">Recursos</a></li>
         <li><a href="#contacto">Contacto</a></li>
       </ul>
@@ -295,7 +306,7 @@
         <li><a href="#">Materiales</a></li>
         <li><a href="#">Guías</a></li>
         <li><a href="#">Noticias</a></li>
-        <li><a href="#">Multimedia</a></li>
+        <li><a href="multimedia.html">Multimedia</a></li>
       </ul>
     </nav>
 
@@ -322,6 +333,11 @@
   </div>
 </footer>
 
+<script src="js/theme.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/stats.js" defer></script>
 <script src="js/app.js" defer></script>
 </body>
 </html>
