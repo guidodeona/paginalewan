@@ -223,6 +223,7 @@ set search_path = public
 as $$
 declare
   v_author uuid;
+  v_has_children boolean;
 begin
   select author_id into v_author from public.comments where id = p_comment_id;
   if v_author is null then
@@ -231,7 +232,18 @@ begin
   if v_author <> auth.uid() and not public.is_admin() then
     raise exception 'No tenés permiso para eliminar este comentario.' using errcode = '42501';
   end if;
-  update public.comments set is_deleted = true, body = '' where id = p_comment_id;
+
+  select exists(select 1 from public.comments where parent_id = p_comment_id) into v_has_children;
+
+  if v_has_children then
+    -- Tiene respuestas: se deja el placeholder "[Comentario eliminado]" para
+    -- no dejar esas respuestas huerfanas, sin contexto de que estaban
+    -- respondiendo.
+    update public.comments set is_deleted = true, body = '' where id = p_comment_id;
+  else
+    -- Sin respuestas: se borra de verdad, desaparece de la lista.
+    delete from public.comments where id = p_comment_id;
+  end if;
 end;
 $$;
 
