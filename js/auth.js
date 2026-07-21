@@ -90,6 +90,14 @@
           <div class="comment-form-row"><input type="text" name="displayName" placeholder="Tu nombre" maxlength="40" required autocomplete="name"></div>
           <div class="comment-form-row"><input type="email" name="email" placeholder="Tu email" required autocomplete="email"></div>
           <div class="comment-form-row"><input type="password" name="password" placeholder="Contraseña (mínimo 8 caracteres)" minlength="8" required autocomplete="new-password"></div>
+          <label class="auth-consent-row">
+            <input type="checkbox" name="communicationConsent">
+            <span>Acepto recibir información sobre eventos, publicaciones y actividades.</span>
+          </label>
+          <label class="auth-consent-row">
+            <input type="checkbox" name="termsAccepted" required>
+            <span>Acepto los <a href="${BASE_PATH}terminos-y-condiciones.html" target="_blank" rel="noopener">Términos y Condiciones</a>. *</span>
+          </label>
           <p class="comment-form-feedback" data-auth-feedback="signup" role="status" aria-live="polite"></p>
           <button type="submit" class="btn btn-primary">Crear cuenta</button>
         </form>
@@ -116,6 +124,7 @@
       </button>
       <ul class="auth-user-dropdown">
         <li data-auth-role-badge class="auth-role-badge" hidden>Administradora</li>
+        <li><a href="${BASE_PATH}perfil.html">Mi perfil</a></li>
         <li data-auth-admin-link hidden><a href="${BASE_PATH}admin.html">Panel de moderación</a></li>
         <li><button type="button" class="auth-signout">Cerrar sesión</button></li>
       </ul>
@@ -177,10 +186,20 @@
       const displayName = form.displayName.value.trim();
       const email = form.email.value.trim();
       const password = form.password.value;
+      const communicationConsent = form.communicationConsent.checked;
+      const termsAccepted = form.termsAccepted.checked;
       if (displayName.length < 2) { feedback.textContent = 'El nombre tiene que tener al menos 2 caracteres.'; return; }
+      if (!termsAccepted) { feedback.textContent = 'Tenés que aceptar los Términos y Condiciones para crear tu cuenta.'; return; }
       const { error } = await client.auth.signUp({
         email, password,
-        options: { data: { display_name: displayName } },
+        options: {
+          data: {
+            display_name: displayName,
+            communication_consent: communicationConsent,
+            terms_accepted: termsAccepted,
+            terms_version: window.TERMS_VERSION || null,
+          },
+        },
       });
       if (error) { feedback.textContent = translateAuthError(error); return; }
       feedback.textContent = '¡Listo! Si tu proyecto pide confirmación por email, revisá tu casilla antes de iniciar sesión.';
@@ -230,6 +249,61 @@
     });
   }
 
+  // --- Gate de terminos y condiciones -----------------------------------------
+  // Se muestra si el perfil logueado no tiene aceptada la version vigente de
+  // los Terminos (cubre tanto una futura actualizacion de version para
+  // cuentas ya existentes como cualquier alta que en el futuro no pase por
+  // el checkbox del formulario). No tiene boton de cerrar: o se aceptan, o
+  // se cierra sesion.
+  function buildTermsGate() {
+    const modal = document.createElement('div');
+    modal.className = 'auth-modal terms-gate-modal';
+    modal.hidden = true;
+    modal.innerHTML = `
+      <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="termsGateTitle">
+        <h2 id="termsGateTitle">Para continuar, aceptá los Términos y Condiciones</h2>
+        <p class="auth-forgot-desc">Actualizamos (o todavía no tenemos registrada) tu aceptación de los Términos vigentes. Es necesario aceptarlos para seguir usando tu cuenta.</p>
+        <label class="auth-consent-row">
+          <input type="checkbox" data-terms-gate-checkbox>
+          <span>Acepto los <a href="${BASE_PATH}terminos-y-condiciones.html" target="_blank" rel="noopener">Términos y Condiciones</a>.</span>
+        </label>
+        <p class="comment-form-feedback" data-terms-gate-feedback role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary" data-terms-gate-confirm>Continuar</button>
+        <button type="button" class="auth-forgot-link" data-terms-gate-signout>Cerrar sesión</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  function wireTermsGate(modal) {
+    modal.querySelector('[data-terms-gate-confirm]').addEventListener('click', async () => {
+      const checkbox = modal.querySelector('[data-terms-gate-checkbox]');
+      const feedback = modal.querySelector('[data-terms-gate-feedback]');
+      if (!checkbox.checked) { feedback.textContent = 'Tenés que tildar la casilla para continuar.'; return; }
+      const user = currentUser;
+      if (!user) return;
+      await client.from('profiles').update({
+        terms_accepted: true,
+        terms_accepted_at: new Date().toISOString(),
+        terms_version: window.TERMS_VERSION || null,
+      }).eq('id', user.id);
+      await refreshProfile();
+      modal.hidden = true;
+      notify();
+    });
+    modal.querySelector('[data-terms-gate-signout]').addEventListener('click', async () => {
+      await client.auth.signOut();
+      modal.hidden = true;
+    });
+  }
+
+  function needsTermsAcceptance(profile) {
+    if (!profile) return false;
+    if (!window.TERMS_VERSION) return false;
+    return !profile.terms_accepted || profile.terms_version !== window.TERMS_VERSION;
+  }
+
   function translateAuthError(error) {
     const msg = (error && error.message) || '';
     if (error && error.status === 429) return 'Demasiados intentos. Esperá un momento y volvé a intentar.';
@@ -246,15 +320,21 @@
     const ui = buildUI();
     wireUI(ui);
 
+    const termsGate = buildTermsGate();
+    wireTermsGate(termsGate);
+    const checkTermsGate = () => { termsGate.hidden = !needsTermsAcceptance(currentProfile); };
+
     const { data: { session } } = await client.auth.getSession();
     currentUser = session ? session.user : null;
     await refreshProfile();
     notify();
+    checkTermsGate();
 
     client.auth.onAuthStateChange(async (_event, session) => {
       currentUser = session ? session.user : null;
       await refreshProfile();
       notify();
+      checkTermsGate();
       document.dispatchEvent(new CustomEvent('activemos:auth-changed', { detail: { user: currentUser, profile: currentProfile } }));
     });
   }

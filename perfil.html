@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('activemos-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi perfil — Activemos Joven</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2300B7EB'/%3E%3Cpath d='M9 16l5 5 9-11' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Urbanist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido principal</a>
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a href="index.html#inicio" class="logo" aria-label="Activemos Joven — inicio">
+      <img class="logo-lockup" src="assets/icons/logo-activemos-joven.png" alt="Activemos Joven" width="953" height="263">
+    </a>
+
+    <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú de navegación">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+      <ul>
+        <li><a href="index.html#inicio">Inicio</a></li>
+        <li><a href="index.html#nosotros">Somos</a></li>
+        <li><a href="index.html#tematicas">Abramos debate</a></li>
+        <li><a href="actividades.html">Actividades</a></li>
+        <li><a href="multimedia.html">Multimedia</a></li>
+        <li><a href="index.html#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-social"></div>
+
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="article-hero page-hero">
+    <div class="container article-hero-inner">
+      <nav class="article-breadcrumb" aria-label="Ruta de navegación">
+        <a href="index.html#inicio">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Mi perfil</span>
+      </nav>
+      <h1 class="section-heading"><span class="pre">MI</span><span class="brush-word brush-word--sm">PERFIL</span></h1>
+      <p class="page-hero-desc">Personalizá tu avatar, contá quién sos y elegí qué querés compartir públicamente.</p>
+    </div>
+  </section>
+
+  <section class="admin-hub">
+    <div class="container">
+      <div data-profile-gate>
+        <p class="media-empty">Cargando…</p>
+      </div>
+
+      <div data-profile-panel hidden class="profile-grid">
+        <!-- Columna avatar -->
+        <div class="profile-avatar-card">
+          <div class="profile-avatar-preview">
+            <img data-profile-avatar-img alt="Tu avatar" hidden>
+            <div data-profile-avatar-svg class="profile-avatar-svg-mount"></div>
+          </div>
+
+          <div class="media-tabs profile-avatar-tabs" role="tablist">
+            <button type="button" class="media-tab" role="tab" data-avatar-tab="presets" aria-selected="true">Elegir avatar</button>
+            <button type="button" class="media-tab" role="tab" data-avatar-tab="upload" aria-selected="false" tabindex="-1">Subir foto</button>
+          </div>
+
+          <div data-avatar-presets-panel class="avatar-preset-grid"></div>
+
+          <div data-avatar-upload-panel hidden>
+            <input type="file" accept="image/jpeg,image/png,image/webp" data-avatar-file-input class="avatar-file-input">
+            <p class="profile-field-hint">JPG, PNG o WEBP. Máximo 3 MB.</p>
+            <div data-crop-wrap class="avatar-crop-wrap" hidden>
+              <canvas data-crop-canvas width="280" height="280" class="avatar-crop-canvas"></canvas>
+              <label class="avatar-crop-zoom-label">
+                Zoom
+                <input type="range" min="1" max="3" step="0.01" value="1" data-crop-zoom>
+              </label>
+              <div class="avatar-crop-actions">
+                <button type="button" class="btn btn-primary" data-crop-save>Usar esta foto</button>
+                <button type="button" class="btn btn-outline-pink" data-crop-cancel>Cancelar</button>
+              </div>
+            </div>
+            <button type="button" class="auth-forgot-link" data-avatar-remove>Quitar foto y volver a un avatar</button>
+          </div>
+          <p class="comment-form-feedback" data-avatar-feedback role="status" aria-live="polite"></p>
+        </div>
+
+        <!-- Columna formulario -->
+        <form class="profile-form" data-profile-form>
+          <fieldset class="profile-fieldset">
+            <legend>Información básica</legend>
+            <div class="profile-field-row">
+              <label>Nombre<input type="text" name="firstName" maxlength="40"></label>
+              <label>Apellido<input type="text" name="lastName" maxlength="40"></label>
+            </div>
+            <label>Nombre de usuario
+              <input type="text" name="username" maxlength="20" pattern="[a-zA-Z0-9_]{3,20}" placeholder="usuario_1">
+              <span class="profile-field-hint">Entre 3 y 20 caracteres: letras, números o guion bajo. Es público.</span>
+            </label>
+            <label>Biografía
+              <textarea name="bio" maxlength="280" rows="3" placeholder="Contá brevemente quién sos"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset class="profile-fieldset">
+            <legend>Información personal</legend>
+            <div class="profile-field-row">
+              <label>Localidad<input type="text" name="location" maxlength="60"></label>
+              <label>Provincia<input type="text" name="province" maxlength="60"></label>
+            </div>
+            <label>
+              Fecha de nacimiento
+              <input type="date" name="birthDate">
+              <span class="profile-field-hint profile-field-hint--private">🔒 Privado: nunca se muestra a otros usuarios.</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="profile-fieldset">
+            <legend>Educación</legend>
+            <label>Nivel educativo
+              <select name="educationLevel">
+                <option value="">Preferí no decir</option>
+                <option value="secundario">Secundario</option>
+                <option value="terciario">Terciario</option>
+                <option value="universitario">Universitario</option>
+                <option value="posgrado">Posgrado</option>
+              </select>
+            </label>
+            <div class="profile-field-row">
+              <label>Institución (opcional)<input type="text" name="educationInstitution" maxlength="80"></label>
+              <label>Área de estudio (opcional)<input type="text" name="educationField" maxlength="80"></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="profile-fieldset">
+            <legend>Contacto</legend>
+            <label>Teléfono
+              <input type="tel" name="phone" maxlength="20" placeholder="+54 9 341 ...">
+              <span class="profile-field-hint profile-field-hint--private">🔒 Privado: nunca se muestra a otros usuarios.</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="profile-fieldset">
+            <legend>Redes sociales</legend>
+            <p class="profile-field-hint">Marcá cuáles querés que se vean en tu perfil público.</p>
+            <div class="profile-social-list" data-social-list>
+              <!-- filas generadas por JS -->
+            </div>
+          </fieldset>
+
+          <fieldset class="profile-fieldset">
+            <legend>Comunicaciones</legend>
+            <label class="auth-consent-row">
+              <input type="checkbox" name="communicationConsent">
+              <span>Acepto recibir información sobre eventos, publicaciones y actividades.</span>
+            </label>
+          </fieldset>
+
+          <p class="comment-form-feedback" data-profile-feedback role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="contacto">
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a href="index.html#inicio" class="logo" aria-label="Activemos Joven — inicio">
+        <img class="logo-lockup logo-lockup--stacked" src="assets/icons/logo-activemos-joven-stacked.png" alt="Activemos Joven" width="953" height="263">
+      </a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; <span id="year"></span> ActivemosJoven. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script src="js/theme.js" defer></script>
+<script src="js/legal-config.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/avatars.js" defer></script>
+<script src="js/perfil.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>

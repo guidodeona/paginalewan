@@ -50,7 +50,7 @@
   async function loadComments(articleId) {
     const { data: comments, error } = await client()
       .from('comments')
-      .select('id, parent_id, author_id, body, created_at, updated_at, is_deleted, profiles!comments_author_id_fkey(display_name, role)')
+      .select('id, parent_id, author_id, body, created_at, updated_at, is_deleted, profiles!comments_author_id_fkey(display_name, role, avatar_type, avatar_preset_id, avatar_url)')
       .eq('article_id', articleId)
       .order('created_at', { ascending: true });
     if (error) { console.error(error); return { comments: [], likesByComment: new Map(), likedByMe: new Set() }; }
@@ -70,7 +70,23 @@
   }
 
   // --- Render ----------------------------------------------------------------
-  function buildAvatar(name) {
+  function buildAvatar(name, profile) {
+    if (profile && profile.avatar_type === 'custom' && profile.avatar_url) {
+      const img = document.createElement('img');
+      img.className = 'comment-avatar comment-avatar--photo';
+      img.src = profile.avatar_url;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      return img;
+    }
+    if (profile && window.getAvatarPreset) {
+      const preset = window.getAvatarPreset(profile.avatar_preset_id || 'avatar-1');
+      const avatar = document.createElement('div');
+      avatar.className = 'comment-avatar comment-avatar--preset';
+      avatar.innerHTML = preset.svg;
+      avatar.setAttribute('aria-hidden', 'true');
+      return avatar;
+    }
     const avatar = document.createElement('div');
     avatar.className = `comment-avatar comment-avatar--${avatarColorClass(name)}`;
     avatar.textContent = initials(name);
@@ -98,7 +114,7 @@
 
     const head = document.createElement('div');
     head.className = 'comment-head';
-    head.appendChild(buildAvatar(authorName));
+    head.appendChild(buildAvatar(authorName, comment.is_deleted ? null : comment.profiles));
 
     const headText = document.createElement('div');
     const nameRow = document.createElement('span');

@@ -83,11 +83,21 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, display_name, role)
+  insert into public.profiles (
+    id, display_name, role,
+    terms_accepted, terms_accepted_at, terms_version,
+    communication_consent, communication_consent_at, communication_consent_updated_at
+  )
   values (
     new.id,
     coalesce(nullif(trim(new.raw_user_meta_data->>'display_name'), ''), split_part(new.email, '@', 1)),
-    'user'
+    'user',
+    coalesce((new.raw_user_meta_data->>'terms_accepted')::boolean, false),
+    case when coalesce((new.raw_user_meta_data->>'terms_accepted')::boolean, false) then now() else null end,
+    nullif(new.raw_user_meta_data->>'terms_version', ''),
+    coalesce((new.raw_user_meta_data->>'communication_consent')::boolean, false),
+    case when coalesce((new.raw_user_meta_data->>'communication_consent')::boolean, false) then now() else null end,
+    now()
   );
   return new;
 end;
@@ -283,6 +293,193 @@ grant execute on function public.create_comment(text, uuid, text) to authenticat
 grant execute on function public.edit_comment(uuid, text) to authenticated;
 grant execute on function public.delete_comment(uuid) to authenticated;
 grant execute on function public.toggle_like(uuid) to authenticated;
+
+-- ============================================================================
+-- 5. Perfiles ampliados: datos publicos, datos privados, redes sociales
+-- ============================================================================
+-- Diseño de privacidad (por que esta separado en 3 tablas en vez de una):
+-- `profiles` sigue siendo de lectura publica (se necesita para mostrar
+-- nombre/avatar en comentarios). Por eso el telefono y la fecha de
+-- nacimiento NO viven ahi: si estuvieran en la misma tabla, cualquiera
+-- (incluso sin loguearse) podria leerlos con la misma consulta publica que
+-- lee el nombre. Van en `profile_private`, con RLS que solo permite ver la
+-- propia fila. Las redes sociales van en su propia tabla porque la
+-- visibilidad se decide POR RED (el usuario elige cuales mostrar), y esa
+-- regla se aplica con RLS fila por fila, no confiando en que el frontend
+-- "elija no mostrar" un campo que en realidad sigue siendo publico.
+
+alter table public.profiles add column if not exists username text;
+alter table public.profiles add column if not exists first_name text;
+alter table public.profiles add column if not exists last_name text;
+alter table public.profiles add column if not exists avatar_type text not null default 'preset' check (avatar_type in ('preset', 'custom'));
+alter table public.profiles add column if not exists avatar_preset_id text default 'avatar-1';
+alter table public.profiles add column if not exists avatar_url text;
+alter table public.profiles add column if not exists bio text check (char_length(bio) <= 280);
+alter table public.profiles add column if not exists location text;
+alter table public.profiles add column if not exists province text;
+alter table public.profiles add column if not exists education_level text;
+alter table public.profiles add column if not exists education_institution text;
+alter table public.profiles add column if not exists education_field text;
+alter table public.profiles add column if not exists communication_consent boolean not null default false;
+alter table public.profiles add column if not exists communication_consent_at timestamptz;
+alter table public.profiles add column if not exists communication_consent_updated_at timestamptz;
+alter table public.profiles add column if not exists terms_accepted boolean not null default false;
+alter table public.profiles add column if not exists terms_accepted_at timestamptz;
+alter table public.profiles add column if not exists terms_version text;
+
+-- Username: unico, formato simple (letras/numeros/guion bajo, 3 a 20 caracteres).
+create unique index if not exists profiles_username_unique_idx on public.profiles (lower(username)) where username is not null;
+alter table public.profiles drop constraint if exists profiles_username_format_check;
+alter table public.profiles add constraint profiles_username_format_check
+  check (username is null or username ~ '^[a-zA-Z0-9_]{3,20}$');
+
+-- Datos privados: NUNCA publicos. Solo el dueño de la fila puede leerlos o
+-- escribirlos (ademas, comments.js/admin.js jamas los piden en su SELECT).
+create table if not exists public.profile_private (
+  id uuid primary key references public.profiles(id) on delete cascade,
+  phone text check (phone is null or phone ~ '^\+?[0-9 ()-]{6,20}$'),
+  birth_date date check (birth_date is null or (birth_date <= current_date and birth_date >= '1900-01-01')),
+  updated_at timestamptz not null default now()
+);
+alter table public.profile_private enable row level security;
+drop policy if exists "profile_private_owner_only" on public.profile_private;
+create policy "profile_private_owner_only" on public.profile_private
+  for all using (auth.uid() = id) with check (auth.uid() = id);
+
+-- Redes sociales: visibilidad real por fila via RLS, no solo un flag que el
+-- frontend decide respetar.
+create table if not exists public.profile_social_links (
+  id uuid primary key default gen_random_uuid(),
+  profile_id uuid not null references public.profiles(id) on delete cascade,
+  platform text not null check (platform in ('instagram', 'tiktok', 'youtube', 'linkedin', 'x', 'facebook')),
+  url text not null check (char_length(url) <= 300 and url ~* '^https://'),
+  is_public boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (profile_id, platform)
+);
+alter table public.profile_social_links enable row level security;
+
+drop policy if exists "social_links_select" on public.profile_social_links;
+create policy "social_links_select" on public.profile_social_links
+  for select using (is_public = true or auth.uid() = profile_id);
+
+drop policy if exists "social_links_owner_write" on public.profile_social_links;
+create policy "social_links_owner_write" on public.profile_social_links
+  for all using (auth.uid() = profile_id) with check (auth.uid() = profile_id);
+
+-- ============================================================================
+-- 6. Almacenamiento de fotos de perfil (Supabase Storage)
+-- ============================================================================
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('avatars', 'avatars', true, 3145728, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do nothing;
+
+drop policy if exists "avatar_public_read" on storage.objects;
+create policy "avatar_public_read" on storage.objects
+  for select using (bucket_id = 'avatars');
+
+-- Cada usuario solo puede subir/editar/borrar dentro de su propia carpeta
+-- (se espera que el frontend suba a "avatars/<user_id>/archivo.ext").
+drop policy if exists "avatar_owner_insert" on storage.objects;
+create policy "avatar_owner_insert" on storage.objects
+  for insert with check (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+
+drop policy if exists "avatar_owner_update" on storage.objects;
+create policy "avatar_owner_update" on storage.objects
+  for update using (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+
+drop policy if exists "avatar_owner_delete" on storage.objects;
+create policy "avatar_owner_delete" on storage.objects
+  for delete using (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+
+-- ============================================================================
+-- 7. Likes de articulos (mismo patron que los likes de comentarios)
+-- ============================================================================
+create table if not exists public.article_likes (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  article_id text not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, article_id)
+);
+create index if not exists article_likes_article_id_idx on public.article_likes(article_id);
+
+alter table public.article_likes enable row level security;
+drop policy if exists "article_likes_select_public" on public.article_likes;
+create policy "article_likes_select_public" on public.article_likes
+  for select using (true);
+-- Sin policies de insert/update/delete: todo pasa por toggle_article_like(),
+-- igual que toggle_like() para comentarios.
+
+create or replace function public.toggle_article_like(p_article_id text)
+returns table(liked boolean, likes_count bigint)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_exists boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Debés iniciar sesión para dar me gusta.' using errcode = '42501';
+  end if;
+  select exists(
+    select 1 from public.article_likes
+    where article_id = p_article_id and user_id = auth.uid()
+  ) into v_exists;
+
+  if v_exists then
+    delete from public.article_likes where article_id = p_article_id and user_id = auth.uid();
+  else
+    insert into public.article_likes (article_id, user_id) values (p_article_id, auth.uid());
+  end if;
+
+  return query
+    select not v_exists, (select count(*) from public.article_likes where article_id = p_article_id);
+end;
+$$;
+
+revoke execute on function public.toggle_article_like(text) from public, anon;
+grant execute on function public.toggle_article_like(text) to authenticated;
+
+-- ============================================================================
+-- 8. Funcion para guardar el consentimiento de comunicaciones con timestamps
+-- ============================================================================
+-- (El resto de los campos de perfil se actualizan con un UPDATE normal desde
+-- el frontend, protegido por la policy "profiles_update_own" que ya existe.
+-- Este consentimiento puntual necesita su propia funcion porque hay que
+-- fijar dos timestamps distintos de forma consistente: la primera vez que
+-- se otorga, y cada vez que se modifica.)
+create or replace function public.set_communication_consent(p_consent boolean)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_profile public.profiles;
+  v_first_time boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Debés iniciar sesión.' using errcode = '42501';
+  end if;
+
+  select (communication_consent_at is null) into v_first_time from public.profiles where id = auth.uid();
+
+  update public.profiles
+    set communication_consent = p_consent,
+        communication_consent_at = case when v_first_time then now() else communication_consent_at end,
+        communication_consent_updated_at = now()
+    where id = auth.uid()
+    returning * into v_profile;
+
+  return v_profile;
+end;
+$$;
+
+revoke execute on function public.set_communication_consent(boolean) from public, anon;
+grant execute on function public.set_communication_consent(boolean) to authenticated;
 
 -- ============================================================================
 -- PASO MANUAL — promover tu cuenta a administradora "ActivemosJoven"
