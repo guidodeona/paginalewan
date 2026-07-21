@@ -22,9 +22,9 @@
   /* Variantes oscurecidas de la marca para rellenos solidos (botones, pills, badges) con texto
      blanco encima. Son autocontenidas -no dependen del fondo de pagina- asi que se mantienen
      iguales en ambos temas. */
-  --color-celeste-deep: #006B8A;
-  --color-rosa-deep: #B21C86;
-  --color-naranja-deep: #A64316;
+  --color-celeste-deep: #00B7EB;
+  --color-rosa-deep: #ED25B2;
+  --color-naranja-deep: #EA5E1F;
   --color-naranja-deeper: #8a3811;
 
   /* Variantes para texto de marca sobre el fondo de la pagina (nav, links, citas, etc.).
@@ -231,6 +231,7 @@ h1, h2, h3,
    Section headings
    ========================================================================== */
 .section-heading { font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height: 1.05; margin-bottom: 1.25rem; }
+.about-content .section-heading { font-size: clamp(1.8rem, 7.4vw, 4.6rem); }
 .section-heading--sm { font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
 .section-heading .pre { display: block; font-weight: 700; color: var(--color-text); text-transform: uppercase; letter-spacing: 0.01em; }
 .section-heading .brush-word--sm { font-size: 1.35em; color: var(--color-rosa); }
