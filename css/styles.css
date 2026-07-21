@@ -25,6 +25,7 @@
   --color-celeste-deep: #006B8A;
   --color-rosa-deep: #B21C86;
   --color-naranja-deep: #A64316;
+  --color-naranja-deeper: #8a3811;
 
   /* Variantes para texto de marca sobre el fondo de la pagina (nav, links, citas, etc.).
      En claro usan el tono oscuro de arriba para llegar a 4.5:1 sobre el crema; en oscuro se
@@ -199,7 +200,7 @@ h1, h2, h3,
 .btn:hover { transform: translateY(-2px); }
 
 .btn-primary { background: var(--color-naranja-deep); color: var(--color-blanco); box-shadow: var(--shadow-soft); }
-.btn-primary:hover { box-shadow: var(--shadow-lift); background: #8a3811; }
+.btn-primary:hover { box-shadow: var(--shadow-lift); background: var(--color-naranja-deeper); }
 
 .btn-outline { background: transparent; color: var(--color-celeste-text); border: 2px solid var(--color-celeste-text); }
 .btn-outline:hover { background: var(--color-celeste-deep); border-color: var(--color-celeste-deep); color: var(--color-blanco); }
@@ -1051,6 +1052,11 @@ body.lightbox-open { overflow: hidden; }
   .has-dropdown:hover .dropdown { transform: none; }
   .nav-toggle { display: flex; }
   .header-social { display: none; }
+
+  /* En desktop la tarjeta de Actividades es chica y va a la izquierda
+     (pedido explicito). En tablet, con menos contenido alrededor, ese mismo
+     hueco a la derecha se ve desproporcionado, asi que ahi se centra. */
+  .activities-hub-grid { justify-content: center; }
 }
 
 @media (max-width: 760px) {
