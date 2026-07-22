@@ -7,7 +7,7 @@
   --color-naranja: #EA5E1F;
   --color-text: #1b3a47;
   --color-bg: #F4F2E9;
-  --color-gris: #ECE6D3;
+  --color-gris: #F4F2E9;
   --color-blanco: #FFFFFF;
 
   /* Superficie de tarjetas/paneles flotantes. En claro coincide con blanco puro; en oscuro
@@ -415,6 +415,141 @@ h1, h2, h3,
 .tape--blue { background: var(--color-celeste-tint); border: 1px solid var(--color-celeste); top: -10px; left: 12%; transform: rotate(-8deg); }
 
 .doodle-heart { right: -4%; bottom: -22px; --doodle-rot: 6deg; }
+
+.about--page { padding-block-start: calc(var(--header-h) + clamp(2rem, 5vw, 3.5rem)); }
+.about--page .article-breadcrumb { margin-bottom: 1rem; }
+
+.hero-photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+.photo-placeholder {
+  aspect-ratio: 3 / 4; border-radius: var(--radius-md);
+  background: var(--color-gris); border: 1.5px dashed var(--border-subtle);
+  display: flex; align-items: center; justify-content: center; color: var(--text-faint);
+}
+.photo-placeholder:nth-child(even) { margin-top: 1.5rem; }
+
+/* ==========================================================================
+   Somos — valores, equipo, testimonios, CTA
+   ========================================================================== */
+.values-section { padding-block: clamp(2.5rem, 5vw, 4rem); background: var(--color-gris); }
+.values-heading { max-width: 620px; margin-inline: auto; text-align: center; margin-bottom: clamp(2rem, 4vw, 3rem); }
+.values-heading h2 { font-family: var(--font-heading); font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700; letter-spacing: 0.01em; }
+.values-heading h2 .accent { color: var(--color-rosa-text); }
+.values-heading p { color: var(--text-muted); margin-top: 0.75rem; }
+
+.values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 2.25rem) 1.25rem; }
+.value-card { text-align: center; }
+.value-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 3rem; height: 3rem; border-radius: 50%; margin-bottom: 0.9rem;
+}
+.value-icon--pink { background: var(--color-rosa-tint); color: var(--color-rosa-text); }
+.value-icon--celeste { background: var(--color-celeste-tint); color: var(--color-celeste-text); }
+.value-icon--orange { background: var(--color-naranja-tint); color: var(--color-naranja-text); }
+.value-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+.value-card p { color: var(--text-muted); font-size: 0.88rem; }
+
+.team-section { padding-block: clamp(2.5rem, 5vw, 4rem); background: var(--color-bg); }
+.team-inner { max-width: 620px; margin-inline: auto; text-align: center; }
+.team-inner .section-heading { text-align: center; }
+.team-inner p { color: var(--text-muted); margin-block: 0.75rem 1.25rem; }
+
+/*
+ * Tamanos exactos pedidos: tarjeta inactiva 250x385, tarjeta activa 293x467.
+ * 293/250 = 1.172 y 467/385 = 1.213 -> no es una escala uniforme, por eso
+ * el estado activo usa scale(1.172, 1.213) (dos ejes distintos) en vez de
+ * un solo scale(). Como el "activo" es siempre un transform relativo a la
+ * base, alcanza con cambiar el tamano BASE en cada breakpoint para que las
+ * proporciones se mantengan iguales en tablet/mobile.
+ */
+.team-carousel-wrap {
+  position: relative; max-width: var(--container-max); margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+/*
+ * overflow-x: hidden combinado con overflow-y: visible en el mismo elemento
+ * NO deja el eje vertical realmente libre: por especificacion, el navegador
+ * convierte ese "visible" en "auto" (con scrollbar y recorte) apenas el otro
+ * eje no es visible. Por eso la tarjeta activa se cortaba arriba/abajo y
+ * aparecia una barra de scroll. La solucion real es que el contenedor tenga
+ * altura de sobra para la tarjeta agrandada, para que nunca haya nada que
+ * recortar ni que scrollear, sin depender de ese "visible" que no aplicaba.
+ */
+.team-carousel {
+  overflow-x: hidden; width: 100%;
+  padding-block: 2.75rem;
+}
+.team-carousel-track {
+  display: flex; align-items: center; gap: 2.25rem; width: max-content;
+  will-change: transform;
+}
+.team-card {
+  width: 238px; height: 366px; flex-shrink: 0; flex-direction: column;
+  border-radius: var(--radius-lg); padding: 0; overflow: hidden;
+  text-align: center; color: var(--color-blanco); box-shadow: var(--shadow-card);
+  display: flex;
+  transition: transform 450ms ease-in-out, box-shadow 450ms ease-in-out;
+}
+.team-card--pink { background: var(--color-rosa); }
+.team-card--celeste { background: var(--color-celeste); }
+.team-card--naranja { background: var(--color-naranja); }
+.team-card-photo {
+  height: 200px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.22); color: var(--color-blanco);
+}
+.team-card-info {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 1rem 1.4rem 1.35rem;
+}
+.team-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
+.team-card-role { font-size: 0.88rem; font-weight: 700; opacity: 0.95; margin-bottom: 0.5rem; }
+.team-card-quote { font-size: 0.85rem; font-style: italic; opacity: 0.85; line-height: 1.35; }
+
+.team-card.is-active {
+  transform: scale(1.172, 1.2129);
+  box-shadow: var(--shadow-lift);
+  position: relative;
+  z-index: 5;
+}
+
+@media (max-width: 1024px) {
+  .team-carousel { padding-block: 2.25rem; }
+  .team-card { width: 190px; height: 293px; }
+  .team-card-photo { height: 160px; }
+  .team-carousel-track { gap: 1.75rem; }
+}
+
+@media (max-width: 640px) {
+  .team-carousel { padding-block: 2rem; }
+  .team-card { width: 162px; height: 249px; }
+  .team-card-photo { height: 136px; }
+  .team-card h3 { font-size: 0.92rem; }
+  .team-card-role { font-size: 0.78rem; }
+  .team-card-quote { font-size: 0.75rem; }
+  .team-carousel-track { gap: 1.5rem; }
+}
+
+.testimonials-section { padding-block: clamp(2.5rem, 5vw, 4rem); background: var(--color-gris); }
+.testimonials-section .section-heading { text-align: center; margin-bottom: clamp(1.75rem, 3vw, 2.5rem); }
+.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+.testimonial-card {
+  background: var(--surface); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card); padding: 1.5rem;
+}
+.testimonial-quote-icon { color: var(--color-rosa-text); opacity: 0.6; margin-bottom: 0.75rem; }
+.testimonial-quote { font-size: 0.92rem; font-style: italic; color: var(--text-muted); margin-bottom: 1rem; }
+.testimonial-author { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-faint); }
+.testimonial-photo {
+  width: 2rem; height: 2rem; border-radius: 50%; flex-shrink: 0;
+  background: var(--color-gris); border: 1px solid var(--border-subtle);
+}
+.testimonials-note { text-align: center; color: var(--text-faint); font-size: 0.85rem; margin-top: 1.75rem; }
+
+.somos-cta { position: relative; overflow: hidden; padding-block: clamp(3rem, 7vw, 5rem); }
+.somos-cta-media { position: absolute; inset: 0; z-index: 0; }
+.somos-cta-media img { width: 100%; height: 100%; object-fit: cover; }
+.somos-cta-media::after { content: ""; position: absolute; inset: 0; background: rgba(15, 20, 20, 0.62); }
+.somos-cta-inner { position: relative; z-index: 1; max-width: 640px; margin-inline: auto; text-align: center; }
+.somos-cta-text { font-family: var(--font-heading); color: var(--color-blanco); font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 600; line-height: 1.25; margin-bottom: 1.75rem; }
 
 /* ==========================================================================
    Topics / Tematicas
@@ -1147,15 +1282,23 @@ body.lightbox-open { overflow: hidden; }
   .hero-media { order: -1; }
   .about-grid { grid-template-columns: 1fr; }
   .about-collage { margin-top: 1rem; }
+  .hero-photo-grid { margin-top: 1rem; grid-template-columns: repeat(4, 1fr); }
 
   .profile-grid { grid-template-columns: 1fr; }
   .profile-avatar-card { max-width: 320px; margin-inline: auto; }
+
+  .values-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 560px) {
   .profile-field-row { grid-template-columns: 1fr; }
   .social-link-row { flex-wrap: wrap; }
   .social-link-row .social-link-platform { width: 100%; }
+
+  .values-grid { grid-template-columns: 1fr; }
+  .hero-photo-grid { grid-template-columns: repeat(2, 1fr); }
+  .photo-placeholder:nth-child(even) { margin-top: 0; }
+  .photo-placeholder:nth-child(4n+3), .photo-placeholder:nth-child(4n+4) { margin-top: 1.5rem; }
 }
 
 /* El nav horizontal completo (7 items + logo + social + login + tema) necesita
