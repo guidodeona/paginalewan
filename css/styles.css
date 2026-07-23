@@ -558,6 +558,17 @@ h1, h2, h3,
 .topics-grid { display: grid; grid-template-columns: 0.6fr 1.6fr; gap: clamp(2rem, 4vw, 3rem); }
 .topics-intro p { color: var(--text-muted); margin-bottom: 1.75rem; max-width: 32ch; }
 
+.topics-picker { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.75rem; }
+.topic-pill {
+  display: inline-flex; align-items: center; padding: 0.5rem 1.1rem;
+  border-radius: var(--radius-pill); font-weight: 700; font-size: 0.85rem;
+  color: var(--color-blanco); transition: transform var(--transition), box-shadow var(--transition);
+}
+.topic-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+.topic-pill--pink { background: var(--color-rosa); }
+.topic-pill--celeste { background: var(--color-celeste); color: var(--color-text); }
+.topic-pill--naranja { background: var(--color-naranja); }
+
 .trending-widget {
   margin-top: 2.25rem; padding-top: 1.75rem;
   border-top: 1px solid var(--border-subtle);
@@ -579,6 +590,44 @@ h1, h2, h3,
 .trending-empty { font-size: 0.85rem; color: var(--text-muted); }
 
 .topics-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 340px)); justify-content: center; gap: 1.5rem; }
+
+/* ==========================================================================
+   Abramos Debate — pagina general
+   ========================================================================== */
+.debate-hub { padding-block: clamp(1rem, 3vw, 2rem) clamp(3rem, 6vw, 5rem); }
+.debate-toolbar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 1rem; margin-bottom: 1.75rem;
+}
+.debate-search { position: relative; display: flex; align-items: center; }
+.debate-search-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.75rem; height: 2.75rem; border-radius: 50%; flex-shrink: 0;
+  background: var(--surface); box-shadow: var(--shadow-card); color: var(--color-rosa-text);
+  transition: background var(--transition), color var(--transition);
+}
+.debate-search-toggle:hover, .debate-search-toggle[aria-expanded="true"] { background: var(--color-rosa); color: var(--color-blanco); }
+.debate-search-input {
+  width: 0; opacity: 0; padding: 0; border: none; margin-left: 0;
+  font: inherit; background: var(--surface); border-radius: var(--radius-pill);
+  transition: width var(--transition), opacity var(--transition), padding var(--transition), margin var(--transition);
+}
+.debate-search-input:not([hidden]) {
+  width: 220px; opacity: 1; padding: 0.6rem 1rem; margin-left: 0.6rem;
+  box-shadow: var(--shadow-card);
+}
+.debate-search-input:focus { outline: 2px solid var(--color-celeste); outline-offset: 1px; }
+.debate-results-count { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 1.25rem; }
+.trending-widget--standalone {
+  max-width: 480px; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-subtle);
+}
+@media (max-width: 560px) {
+  .debate-search-input:not([hidden]) { width: 100%; }
+  .debate-toolbar { flex-direction: column; align-items: stretch; }
+  .debate-search { align-self: flex-end; }
+}
+.debate-suggestions { padding-block: clamp(2.5rem, 5vw, 4rem) 0; background: var(--color-bg); }
+.debate-suggestions-desc { color: var(--text-muted); margin-top: 0.75rem; max-width: 60ch; }
 .card {
   background: var(--surface); border-radius: var(--radius-lg);
   overflow: hidden; box-shadow: var(--shadow-card);
