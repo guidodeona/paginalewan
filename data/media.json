@@ -2,12 +2,12 @@
   "videos": [],
   "podcast": [],
   "gallery": [
-    { "src": "monumento.jpeg", "alt": "Monumento a la Bandera, Rosario" },
-    { "src": "bandera.jpeg", "alt": "Bandera argentina" },
-    { "src": "santafe.jpeg", "alt": "Vista de Santa Fe" },
-    { "src": "manos.jpeg", "alt": "Manos de jóvenes participando" },
-    { "src": "manos2.jpeg", "alt": "Manos de jóvenes participando en comunidad" },
-    { "src": "mapa.jpeg", "alt": "Mapa ilustrando el territorio y su soberanía" }
+    { "src": "assets/images/monumento.jpeg", "alt": "Monumento a la Bandera, Rosario" },
+    { "src": "assets/images/bandera.jpeg", "alt": "Bandera argentina" },
+    { "src": "assets/images/santafe.jpeg", "alt": "Vista de Santa Fe" },
+    { "src": "assets/images/manos.jpeg", "alt": "Manos de jóvenes participando" },
+    { "src": "assets/images/manos2.jpeg", "alt": "Manos de jóvenes participando en comunidad" },
+    { "src": "assets/images/mapa.jpeg", "alt": "Mapa ilustrando el territorio y su soberanía" }
   ],
   "resources": []
 }

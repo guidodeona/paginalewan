@@ -470,10 +470,10 @@ h1, h2, h3,
   padding-block: 2.75rem;
 }
 .team-carousel-track {
-  display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 2.25rem; width: 100%;
+  display: flex; flex-wrap: wrap; align-items: stretch; justify-content: center; gap: 2.25rem; width: 100%;
 }
 .team-card {
-  width: 238px; height: 366px; flex-shrink: 0; flex-direction: column;
+  width: 238px; flex-shrink: 0; flex-direction: column;
   border-radius: var(--radius-lg); padding: 0; overflow: hidden;
   text-align: center; color: var(--color-blanco); box-shadow: var(--shadow-card);
   display: flex;
@@ -483,8 +483,9 @@ h1, h2, h3,
 .team-card--naranja { background: var(--color-naranja); }
 .team-card-photo {
   height: 200px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.22); color: var(--color-blanco);
+  background: rgba(255,255,255,0.22); color: var(--color-blanco); overflow: hidden;
 }
+.team-card-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .team-card-info {
   flex: 1; display: flex; flex-direction: column; justify-content: center;
   padding: 1rem 1.4rem 1.35rem;
@@ -495,14 +496,14 @@ h1, h2, h3,
 
 @media (max-width: 1024px) {
   .team-carousel { padding-block: 2.25rem; }
-  .team-card { width: 190px; height: 293px; }
+  .team-card { width: 190px; }
   .team-card-photo { height: 160px; }
   .team-carousel-track { gap: 1.75rem; }
 }
 
 @media (max-width: 640px) {
   .team-carousel { padding-block: 2rem; }
-  .team-card { width: 162px; height: 249px; }
+  .team-card { width: 162px; }
   .team-card-photo { height: 136px; }
   .team-card h3 { font-size: 0.92rem; }
   .team-card-role { font-size: 0.78rem; }

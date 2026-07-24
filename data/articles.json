@@ -1,11 +1,23 @@
 {
   "articles": [
     {
+      "id": "la-cuenta-que-la-politica-no-supo-hacer",
+      "url": "articulos/la-cuenta-que-la-politica-no-supo-hacer.html",
+      "title": "La cuenta que la política no supo hacer",
+      "excerpt": "La decepción de los jóvenes hacia las promesas de la democracia no nace de la apatía, sino de una generación que enfrenta un mercado laboral precario, una vivienda inaccesible y un futuro cada vez más incierto.",
+      "image": "assets/images/la-cuenta-que-la-politica-no-supo-hacer.jpeg",
+      "category": "Política",
+      "categoryColor": "pink",
+      "authors": ["Ivana Chamorro", "Juan Coscelli"],
+      "publishDate": "2026-07-24",
+      "readingMinutes": 7
+    },
+    {
       "id": "soberania-o-remate",
       "url": "articulos/soberania-o-remate.html",
       "title": "Soberanía o remate: las leyes de la entrega",
       "excerpt": "Un recorrido por las leyes y proyectos que generan preocupación sobre el control de nuestros recursos, territorio y futuro.",
-      "image": "mapa.jpeg",
+      "image": "assets/images/mapa.jpeg",
       "category": "Política",
       "categoryColor": "pink",
       "authors": ["Victoria Musto", "Enzo Rocca"],
