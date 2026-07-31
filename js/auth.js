@@ -38,7 +38,7 @@
 
   async function refreshProfile() {
     if (!currentUser) { currentProfile = null; return; }
-    const { data } = await client.from('profiles').select('id, display_name, role').eq('id', currentUser.id).single();
+    const { data } = await client.from('profiles').select('id, display_name, role, terms_accepted, terms_version').eq('id', currentUser.id).single();
     currentProfile = data || null;
   }
 
@@ -193,6 +193,7 @@
       const { error } = await client.auth.signUp({
         email, password,
         options: {
+          emailRedirectTo: BASE_PATH + 'index.html',
           data: {
             display_name: displayName,
             communication_consent: communicationConsent,
@@ -309,6 +310,7 @@
     if (error && error.status === 429) return 'Demasiados intentos. Esperá un momento y volvé a intentar.';
     if (/already registered/i.test(msg)) return 'Ese email ya tiene una cuenta. Probá iniciar sesión.';
     if (/invalid login credentials/i.test(msg)) return 'Email o contraseña incorrectos.';
+    if (/email not confirmed/i.test(msg)) return 'Todavía no confirmaste tu email. Revisá tu casilla (y la carpeta de spam) y tocá el link que te mandamos.';
     if (/password should be at least/i.test(msg)) return 'La contraseña es demasiado corta.';
     if (/rate limit/i.test(msg)) return 'Demasiados intentos. Esperá un momento y volvé a intentar.';
     return 'Algo salió mal. Volvé a intentar en un momento.';
@@ -319,6 +321,11 @@
 
     const ui = buildUI();
     wireUI(ui);
+
+    if (window.location.hash === '#ingresar') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      ui.trigger.click();
+    }
 
     const termsGate = buildTermsGate();
     wireTermsGate(termsGate);

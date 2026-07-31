@@ -11,6 +11,9 @@
 (() => {
   'use strict';
 
+  const scriptEl = document.currentScript;
+  const BASE_PATH = scriptEl ? scriptEl.src.replace(/js\/comments\.js.*$/, '') : '';
+
   const MAX_DEPTH = 3;
 
   function client() {
@@ -83,7 +86,7 @@
       const preset = window.getAvatarPreset(profile.avatar_preset_id || 'avatar-1');
       const avatar = document.createElement('div');
       avatar.className = 'comment-avatar comment-avatar--preset';
-      avatar.innerHTML = preset.svg;
+      avatar.appendChild(window.buildAvatarPresetImg(preset, BASE_PATH));
       avatar.setAttribute('aria-hidden', 'true');
       return avatar;
     }
@@ -258,10 +261,11 @@
   }
 
   function buildNewCommentForm(articleId, section, parentId, submitLabel) {
+    const placeholder = parentId ? 'Escribí tu respuesta...' : 'Sumá tu comentario...';
     const form = document.createElement('form');
     form.className = 'comment-form' + (parentId ? ' comment-form--reply' : '');
     form.innerHTML = `
-      <div class="comment-form-row"><textarea name="text" placeholder="${parentId ? 'Escribí tu respuesta...' : 'Sumá tu comentario...'}" maxlength="500" rows="${parentId ? 2 : 3}" required></textarea></div>
+      <div class="comment-form-row"><textarea name="text" placeholder="${placeholder}" maxlength="500" rows="${parentId ? 2 : 3}" required></textarea></div>
       <div class="comment-form-actions">
         <p class="comment-form-feedback" role="status" aria-live="polite"></p>
         <button type="submit" class="btn ${parentId ? 'btn-outline-pink' : 'btn-primary'}">${submitLabel}</button>

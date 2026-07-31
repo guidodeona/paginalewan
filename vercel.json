@@ -12,7 +12,7 @@
         { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'sha256-AF6K6G70JQ3Ot4v/Tr+bF718in3trv51wsAjaMZjXg8='; connect-src 'self' https://sicgohdvfqyhokcmbfcn.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://sicgohdvfqyhokcmbfcn.supabase.co; script-src 'self' 'sha256-AF6K6G70JQ3Ot4v/Tr+bF718in3trv51wsAjaMZjXg8='; connect-src 'self' https://sicgohdvfqyhokcmbfcn.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         }
       ]
     },

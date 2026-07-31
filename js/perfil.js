@@ -44,7 +44,8 @@
       svgMount.innerHTML = '';
     } else {
       const preset = window.getAvatarPreset(profile.avatar_preset_id || 'avatar-1');
-      svgMount.innerHTML = preset.svg;
+      svgMount.innerHTML = '';
+      svgMount.appendChild(window.buildAvatarPresetImg(preset));
       svgMount.hidden = false;
       img.hidden = true;
       img.removeAttribute('src');
@@ -60,7 +61,7 @@
       btn.className = 'avatar-preset-btn';
       btn.setAttribute('aria-label', preset.label);
       btn.setAttribute('aria-pressed', String(profile.avatar_type !== 'custom' && profile.avatar_preset_id === preset.id));
-      btn.innerHTML = preset.svg;
+      btn.appendChild(window.buildAvatarPresetImg(preset));
       btn.addEventListener('click', () => selectPresetAvatar(preset.id));
       grid.appendChild(btn);
     });
@@ -222,6 +223,12 @@
   }
 
   // --- Redes sociales --------------------------------------------------------
+  // Construido con createElement/propiedades (no innerHTML): existing.url es
+  // un dato que el propio usuario guardo, y la validacion al guardar
+  // (saveSocialLinks) solo exige que empiece con "https://", no filtra
+  // comillas ni otros caracteres. Asignar `.value` como propiedad (en vez de
+  // interpolar en un template de HTML) evita que ese texto pueda romper el
+  // atributo e inyectar markup.
   function renderSocialLinks(links) {
     const list = document.querySelector('[data-social-list]');
     list.innerHTML = '';
@@ -229,11 +236,28 @@
       const existing = links.find((l) => l.platform === platform);
       const row = document.createElement('div');
       row.className = 'social-link-row';
-      row.innerHTML = `
-        <span class="social-link-platform">${platform}</span>
-        <input type="url" name="social_${platform}" placeholder="https://" value="${existing ? existing.url.replace(/"/g, '&quot;') : ''}">
-        <label><input type="checkbox" name="social_${platform}_public" ${!existing || existing.is_public ? 'checked' : ''}> Público</label>
-      `;
+
+      const label = document.createElement('span');
+      label.className = 'social-link-platform';
+      label.textContent = platform;
+      row.appendChild(label);
+
+      const input = document.createElement('input');
+      input.type = 'url';
+      input.name = `social_${platform}`;
+      input.placeholder = 'https://';
+      input.value = existing ? existing.url : '';
+      row.appendChild(input);
+
+      const publicLabel = document.createElement('label');
+      const publicCheckbox = document.createElement('input');
+      publicCheckbox.type = 'checkbox';
+      publicCheckbox.name = `social_${platform}_public`;
+      publicCheckbox.checked = !existing || existing.is_public;
+      publicLabel.appendChild(publicCheckbox);
+      publicLabel.appendChild(document.createTextNode(' Público'));
+      row.appendChild(publicLabel);
+
       list.appendChild(row);
     });
   }
@@ -265,8 +289,18 @@
 
   // --- Formulario principal ---------------------------------------------------
   function fillForm(form, profile, privateData) {
-    form.firstName.value = profile.first_name || '';
-    form.lastName.value = profile.last_name || '';
+    // first_name/last_name son columnas separadas del display_name que se pide
+    // al registrarse (nunca se copian una en la otra al crear la cuenta). Si
+    // todavia no se completaron, se usa el display_name como punto de partida
+    // para que el formulario no aparezca vacio la primera vez.
+    if (profile.first_name || profile.last_name) {
+      form.firstName.value = profile.first_name || '';
+      form.lastName.value = profile.last_name || '';
+    } else {
+      const parts = (profile.display_name || '').trim().split(/\s+/);
+      form.firstName.value = parts[0] || '';
+      form.lastName.value = parts.slice(1).join(' ');
+    }
     form.username.value = profile.username || '';
     form.bio.value = profile.bio || '';
     form.location.value = profile.location || '';
