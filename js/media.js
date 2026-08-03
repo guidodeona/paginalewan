@@ -112,9 +112,21 @@
     });
   }
 
+  function initHashTab() {
+    const map = { recursos: 'tab-resources', videos: 'tab-videos', podcast: 'tab-podcast', galeria: 'tab-gallery' };
+    function applyHash() {
+      const id = map[window.location.hash.replace('#', '')];
+      const tab = id && document.getElementById(id);
+      if (tab) tab.click();
+    }
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+  }
+
   async function init() {
     initTabs();
     initLightbox();
+    initHashTab();
 
     const galleryListEarly = document.querySelector('[data-media-list="gallery"]');
     if (galleryListEarly) {
