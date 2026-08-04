@@ -23,6 +23,18 @@
       "authors": ["Victoria Musto", "Enzo Rocca"],
       "publishDate": "2026-07-16",
       "readingMinutes": 5
+    },
+    {
+      "id": "ciberespacio-soberania-argentina",
+      "url": "articulos/ciberespacio-soberania-argentina.html",
+      "title": "El Ciberespacio como Nuevo Tablero de Poder: Geopolítica, Ciberseguridad y Soberanía en el Siglo XXI",
+      "excerpt": "Desde la teoría de Castells y Libicki hasta los casos de Stuxnet, Viasat y Volt Typhoon: por qué el ciberespacio se convirtió en el \"quinto dominio\" de la guerra, y qué implica para una Argentina cuyo tráfico de datos depende en un 81% de servidores en Estados Unidos.",
+      "image": "assets/images/ciberespacio-soberania-argentina.jpeg",
+      "category": "Política",
+      "categoryColor": "pink",
+      "authors": ["Violeta Oficialdegui", "Guido de Oña"],
+      "publishDate": "2026-07-31",
+      "readingMinutes": 11
     }
   ]
 }
