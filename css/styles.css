@@ -485,7 +485,7 @@ h1, h2, h3,
   display: flex;
 }
 .team-card--pink { background: var(--color-rosa); }
-.team-card--celeste { background: var(--color-celeste); color: var(--color-text); }
+.team-card--celeste { background: var(--color-celeste); }
 .team-card--naranja { background: var(--color-naranja); }
 .team-card-photo {
   height: 200px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
