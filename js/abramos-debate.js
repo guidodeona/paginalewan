@@ -191,7 +191,7 @@
 
     if (!mount) return;
 
-    const articles = await loadArticles();
+    const articles = (await loadArticles()).slice().sort((a, b) => b.publishDate.localeCompare(a.publishDate));
     const featured = articles[0];
     const rest = articles.slice(1);
 
