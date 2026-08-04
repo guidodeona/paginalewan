@@ -38,7 +38,7 @@
 
   async function refreshProfile() {
     if (!currentUser) { currentProfile = null; return; }
-    const { data } = await client.from('profiles').select('id, display_name, role, terms_accepted, terms_version').eq('id', currentUser.id).single();
+    const { data } = await client.from('profiles').select('id, display_name, role, terms_accepted, terms_version, avatar_type, avatar_preset_id, avatar_url').eq('id', currentUser.id).single();
     currentProfile = data || null;
   }
 
@@ -242,8 +242,21 @@
       if (user && profile) {
         userMenu.querySelector('[data-auth-name]').textContent = profile.display_name;
         const avatar = userMenu.querySelector('[data-auth-avatar]');
-        avatar.textContent = initials(profile.display_name);
-        avatar.className = `comment-avatar comment-avatar--${avatarColorClass(profile.display_name)}`;
+        avatar.innerHTML = '';
+        if (profile.avatar_type === 'custom' && profile.avatar_url) {
+          avatar.className = 'comment-avatar comment-avatar--preset';
+          const img = document.createElement('img');
+          img.src = profile.avatar_url;
+          img.alt = '';
+          avatar.appendChild(img);
+        } else if (window.getAvatarPreset && window.buildAvatarPresetImg) {
+          const preset = window.getAvatarPreset(profile.avatar_preset_id || 'avatar-1');
+          avatar.className = 'comment-avatar comment-avatar--preset';
+          avatar.appendChild(window.buildAvatarPresetImg(preset, BASE_PATH));
+        } else {
+          avatar.textContent = initials(profile.display_name);
+          avatar.className = `comment-avatar comment-avatar--${avatarColorClass(profile.display_name)}`;
+        }
         userMenu.querySelector('[data-auth-role-badge]').hidden = profile.role !== 'admin';
         userMenu.querySelector('[data-auth-admin-link]').hidden = profile.role !== 'admin';
       }
