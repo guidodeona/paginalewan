@@ -861,6 +861,10 @@ h1, h2, h3,
   aspect-ratio: 16 / 9;
 }
 .article-cover img { width: 100%; height: 100%; object-fit: cover; }
+/* Portadas verticales o de baja resolucion: se muestran enteras (sin recorte
+   a 16:9) y sin estirarlas mas alla de un tamaño razonable. */
+.article-cover--portrait { aspect-ratio: auto; max-width: 420px; margin-inline: auto; }
+.article-cover--portrait img { height: auto; }
 
 /* la portada de "ciberespacio-soberania-argentina" es vertical (no 16:9); se
    muestra completa en un tamaño más chico en vez de recortarla */
