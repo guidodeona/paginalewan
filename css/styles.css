@@ -639,8 +639,11 @@ h1, h2, h3,
   background: var(--surface); border-radius: var(--radius-lg); overflow: hidden;
   box-shadow: var(--shadow-card);
 }
-.featured-card-thumb { position: relative; min-height: 260px; }
-.featured-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* La imagen va en position: absolute para que NO defina la altura de la
+   tarjeta: con una foto vertical, la tarjeta se estiraba a mas de 700px.
+   Ahora la altura la marca el texto (con un minimo) y la foto se recorta. */
+.featured-card-thumb { position: relative; min-height: 300px; }
+.featured-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
 .featured-card-body { padding: clamp(1.5rem, 3vw, 2.25rem); display: flex; flex-direction: column; }
 .featured-card-eyebrow {
   font-family: var(--font-heading); font-size: 0.76rem; font-weight: 700;
@@ -658,18 +661,18 @@ h1, h2, h3,
 .featured-card .btn { align-self: flex-start; margin-top: auto; }
 @media (max-width: 860px) {
   .featured-card { grid-template-columns: 1fr; }
-  .featured-card-thumb { min-height: 200px; }
+  .featured-card-thumb { min-height: 220px; }
 }
 
 /* Categorías + Más leídos */
 .debate-side-card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 1.5rem; }
 .debate-side-heading { font-family: var(--font-heading); font-size: 1rem; font-weight: 700; margin-bottom: 0.85rem; }
 
-.debate-categories-card { display: flex; flex-direction: column; justify-content: center; }
+.debate-categories-card { display: flex; flex-direction: column; justify-content: flex-start; }
 .topics-picker--sidebar { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-bottom: 0; }
 .topics-picker--sidebar .topic-pill { justify-content: center; }
 
-.trending-widget--inline { margin-top: 0; padding-top: 0; border-top: none; }
+.trending-widget--inline { margin-top: 0; padding-top: 1.5rem; border-top: none; }
 .trending-list--inline { gap: 0.7rem; }
 
 /* Newsletter */
