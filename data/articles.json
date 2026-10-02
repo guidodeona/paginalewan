@@ -31,6 +31,7 @@
       "excerpt": "Desde la teoría de Castells y Libicki hasta los casos de Stuxnet, Viasat y Volt Typhoon: por qué el ciberespacio se convirtió en el \"quinto dominio\" de la guerra, y qué implica para una Argentina cuyo tráfico de datos depende en un 81% de servidores en Estados Unidos.",
       "image": "assets/images/ciberespacio-soberania-argentina.jpeg",
       "category": "Política",
+      "secondaryCategories": ["Tecnología"],
       "categoryColor": "pink",
       "authors": ["Violeta Oficialdegui", "Guido de Oña"],
       "publishDate": "2026-08-04",

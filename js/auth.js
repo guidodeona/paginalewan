@@ -36,10 +36,20 @@
     listeners.forEach((cb) => { try { cb({ user: currentUser, profile: currentProfile }); } catch (e) { /* no-op */ } });
   }
 
+  // La fila completa del perfil propio se lee via get_my_profile(): la API
+  // publica solo deja leer las columnas que se muestran en comentarios (ver
+  // seccion 9 de supabase/schema.sql). El fallback al SELECT directo cubre
+  // el caso de una base que todavia no tiene esa funcion.
+  async function fetchOwnProfile() {
+    if (!currentUser) return null;
+    const { data, error } = await client.rpc('get_my_profile');
+    if (!error) return data && data.id ? data : null;
+    const { data: fallback } = await client.from('profiles').select('*').eq('id', currentUser.id).single();
+    return fallback || null;
+  }
+
   async function refreshProfile() {
-    if (!currentUser) { currentProfile = null; return; }
-    const { data } = await client.from('profiles').select('id, display_name, role, terms_accepted, terms_version, avatar_type, avatar_preset_id, avatar_url').eq('id', currentUser.id).single();
-    currentProfile = data || null;
+    currentProfile = await fetchOwnProfile();
   }
 
   const AVATAR_PALETTE = ['celeste', 'rosa', 'naranja'];
@@ -297,11 +307,17 @@
       if (!checkbox.checked) { feedback.textContent = 'Tenés que tildar la casilla para continuar.'; return; }
       const user = currentUser;
       if (!user) return;
-      await client.from('profiles').update({
-        terms_accepted: true,
-        terms_accepted_at: new Date().toISOString(),
-        terms_version: window.TERMS_VERSION || null,
-      }).eq('id', user.id);
+      // La fecha de aceptacion la pone el servidor (accept_terms), no el reloj
+      // del navegador.
+      const { error } = await client.rpc('accept_terms', { p_version: window.TERMS_VERSION });
+      if (error) {
+        const { error: fallbackError } = await client.from('profiles').update({
+          terms_accepted: true,
+          terms_accepted_at: new Date().toISOString(),
+          terms_version: window.TERMS_VERSION || null,
+        }).eq('id', user.id);
+        if (fallbackError) { feedback.textContent = 'No se pudo registrar la aceptación. Volvé a intentar.'; return; }
+      }
       await refreshProfile();
       modal.hidden = true;
       notify();
@@ -364,6 +380,7 @@
     isConfigured: () => configured,
     getUser: () => currentUser,
     getProfile: () => currentProfile,
+    fetchOwnProfile,
     onChange: (cb) => { listeners.push(cb); if (configured) cb({ user: currentUser, profile: currentProfile }); },
     openLoginModal: () => document.querySelector('.auth-trigger')?.click(),
   };

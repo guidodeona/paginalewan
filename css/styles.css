@@ -130,7 +130,7 @@ h1, h2, h3,
 .activity-info h3,
 .activity-date .day,
 .activity-date .month,
-.footer-col h3,
+.footer-col h2,
 .tag-badge {
   font-family: var(--font-heading);
   font-kerning: none;
@@ -429,6 +429,8 @@ h1, h2, h3,
 .photo-placeholder:nth-child(3n+1) { background: var(--color-rosa); }
 .photo-placeholder:nth-child(3n+2) { background: var(--color-naranja); }
 .photo-placeholder:nth-child(3n) { background: var(--color-celeste); }
+.photo-placeholder--img { overflow: hidden; background: var(--color-gris); }
+.photo-placeholder--img img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ==========================================================================
    Somos — valores, equipo, testimonios, CTA
@@ -673,6 +675,9 @@ h1, h2, h3,
 /* Newsletter */
 .debate-newsletter { padding-block: clamp(2.5rem, 5vw, 4rem); background: var(--color-gris); }
 .debate-newsletter-inner {
+  /* El padding propio pisa el padding-inline del .container, asi que el
+     margen lateral se resta del ancho para que la tarjeta no toque los bordes. */
+  width: calc(100% - 2 * var(--gutter)); max-width: calc(var(--container-max) - 2 * var(--gutter));
   display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
   background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
   padding: clamp(1.5rem, 3vw, 2.25rem);
@@ -738,6 +743,9 @@ h1, h2, h3,
 .activity-items { display: flex; flex-direction: column; margin-block: 1.75rem; }
 .activity-item { display: flex; gap: 1.1rem; padding-block: 1.1rem; border-top: 1px solid var(--border-subtle); }
 .activity-item:first-child { border-top: none; }
+.activity-item--empty { display: block; color: var(--text-muted); }
+.activity-item--empty a { color: var(--color-rosa-text); font-weight: 700; }
+.activities-past-notice { grid-column: 1 / -1; color: var(--text-muted); text-align: center; padding-block: 1rem 0.5rem; }
 
 .activity-date {
   flex-shrink: 0; width: 62px; height: 62px; border-radius: var(--radius-sm);
@@ -786,10 +794,12 @@ h1, h2, h3,
   display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 0.8fr 1.4fr;
   gap: clamp(1.5rem, 3vw, 2.5rem); padding-block-end: 2.5rem;
 }
-.footer-col h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.1rem; }
+.footer-col h2 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.1rem; }
 .footer-col ul { display: flex; flex-direction: column; gap: 0.65rem; }
 .footer-col a { color: var(--text-muted); font-size: 0.92rem; transition: color var(--transition); }
 .footer-col a:hover { color: var(--color-rosa-text); }
+.footer-bottom a { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color var(--transition); }
+.footer-bottom a:hover { color: var(--color-rosa-text); }
 
 .footer-tagline { position: relative; text-align: right; }
 .footer-tagline .doodle-heart { position: static; display: inline-block; margin-top: 0.5rem; animation: none; }
@@ -997,6 +1007,8 @@ h1, h2, h3,
 .comment-reply-btn { font-size: 0.82rem; font-weight: 700; color: var(--color-celeste-text); }
 .comment-edit-btn { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
 .comment-delete-btn { font-size: 0.82rem; font-weight: 700; color: var(--color-naranja-text); }
+.comment-report-btn { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
+.comment-report-btn:disabled { opacity: 0.6; cursor: default; }
 .comment-reply-count { font-size: 0.78rem; color: var(--text-faint); }
 .comment-admin-badge {
   display: inline-block; margin-left: 0.5rem; padding: 0.15rem 0.5rem;
@@ -1294,6 +1306,11 @@ body.lightbox-open { overflow: hidden; }
   font-size: 0.72rem; font-weight: 700; background: var(--color-celeste-tint); color: var(--color-celeste-text);
 }
 .admin-status-badge--deleted { background: var(--color-naranja-tint); color: var(--color-naranja-text); }
+.admin-status-badge--reported { background: var(--color-rosa-tint); color: var(--color-rosa-text); margin-left: 0.35rem; }
+.admin-report-reasons { margin-top: 0.5rem; padding-left: 1rem; font-size: 0.8rem; color: var(--text-muted); list-style: disc; }
+.admin-hub .media-tabs { margin-bottom: 1.5rem; }
+.admin-newsletter-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.admin-newsletter-bar p { margin: 0; color: var(--text-muted); }
 
 /* ==========================================================================
    Likes de articulo
@@ -1404,7 +1421,12 @@ body.lightbox-open { overflow: hidden; }
 @media (max-width: 1080px) {
   .topics-grid { grid-template-columns: 1fr; }
   .activities-grid { grid-template-columns: 1fr; }
-  .activities-media { max-width: 420px; margin-inline: auto; }
+  /* width: 100% hace falta: con margin-inline auto, el item del grid se
+     encoge al ancho de su contenido, y como la imagen es width: 100% el
+     bloque colapsaba a 0px (la nota quedaba como una tira angosta encima
+     del texto de la actividad). El margin-bottom deja lugar a la nota, que
+     sobresale por debajo de la foto. */
+  .activities-media { width: 100%; max-width: 420px; margin-inline: auto; margin-bottom: 2.5rem; }
   .activities-newsletter { max-width: 480px; margin-inline: auto; width: 100%; }
   .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-tagline { grid-column: 1 / -1; text-align: left; }

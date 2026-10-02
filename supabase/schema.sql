@@ -1,6 +1,10 @@
 -- ============================================================================
 -- Activemos Joven — schema de autenticacion, roles y comentarios
 -- ============================================================================
+-- IMPORTANTE al actualizar: despues de cambiar este archivo hay que volver a
+-- correrlo entero en el SQL Editor. El frontend tolera las dos versiones
+-- (con y sin las secciones 9-12), asi que da igual si se publica primero la
+-- web o se corre primero el SQL.
 -- Correr una sola vez en el SQL Editor de Supabase (Project > SQL Editor > New
 -- query > pegar todo este archivo > Run). Es idempotente: se puede volver a
 -- correr sin romper nada si ya existe (usa "if not exists" / "or replace").
@@ -135,8 +139,8 @@ create table if not exists public.comments (
   is_deleted boolean not null default false,
   is_reported boolean not null default false
 );
--- is_reported queda listo para un futuro boton "reportar" del lado de los
--- usuarios; hoy no se escribe desde ningun lado.
+-- is_reported lo escriben report_comment()/dismiss_comment_reports()
+-- (seccion 12).
 
 create index if not exists comments_article_id_idx on public.comments(article_id);
 create index if not exists comments_parent_id_idx on public.comments(parent_id);
@@ -175,6 +179,22 @@ create policy "comment_likes_select_public" on public.comment_likes
 -- ----------------------------------------------------------------------------
 -- 4. Funciones RPC (unico camino para crear/editar/borrar/likear)
 -- ----------------------------------------------------------------------------
+-- Los ids de articulo son el "slug" del archivo HTML (ej.
+-- "soberania-o-remate"). La base no conoce la lista de articulos (vive en
+-- data/articles.json), pero al menos exige ese formato para que no se puedan
+-- crear comentarios/likes/vistas sobre ids arbitrarios.
+create or replace function public.is_valid_article_id(p_article_id text)
+returns boolean
+language sql
+immutable
+as $$
+  select p_article_id is not null
+     and char_length(p_article_id) <= 120
+     and p_article_id ~ '^[a-z0-9]+(-[a-z0-9]+)*$';
+$$;
+
+create index if not exists comments_author_created_idx on public.comments(author_id, created_at);
+
 create or replace function public.create_comment(p_article_id text, p_parent_id uuid, p_body text)
 returns public.comments
 language plpgsql
@@ -184,12 +204,36 @@ as $$
 declare
   v_comment public.comments;
   v_body text := trim(p_body);
+  v_parent public.comments;
 begin
   if auth.uid() is null then
     raise exception 'Debés iniciar sesión para comentar.' using errcode = '42501';
   end if;
+  if not public.is_valid_article_id(p_article_id) then
+    raise exception 'Artículo inválido.' using errcode = '22023';
+  end if;
   if char_length(v_body) < 3 or char_length(v_body) > 500 then
     raise exception 'El comentario tiene que tener entre 3 y 500 caracteres.' using errcode = '22023';
+  end if;
+  -- Una respuesta tiene que colgar de un comentario vivo del MISMO articulo
+  -- (sin esto se podian crear respuestas cruzadas entre notas, o colgadas de
+  -- un comentario ya eliminado).
+  if p_parent_id is not null then
+    select * into v_parent from public.comments where id = p_parent_id;
+    if v_parent.id is null or v_parent.is_deleted or v_parent.article_id <> p_article_id then
+      raise exception 'El comentario al que querés responder ya no existe.' using errcode = 'P0002';
+    end if;
+  end if;
+  -- Limite anti-spam por usuario. Los admins quedan exentos.
+  if not public.is_admin() then
+    if (select count(*) from public.comments
+        where author_id = auth.uid() and created_at > now() - interval '1 minute') >= 3 then
+      raise exception 'Estás comentando muy seguido. Esperá un minuto y volvé a intentar.' using errcode = 'P0001';
+    end if;
+    if (select count(*) from public.comments
+        where author_id = auth.uid() and created_at > now() - interval '1 hour') >= 30 then
+      raise exception 'Llegaste al límite de comentarios por hora. Volvé a intentar más tarde.' using errcode = 'P0001';
+    end if;
   end if;
   insert into public.comments (article_id, parent_id, author_id, body)
   values (p_article_id, p_parent_id, auth.uid(), v_body)
@@ -264,24 +308,26 @@ security definer
 set search_path = public
 as $$
 declare
-  v_exists boolean;
+  v_removed boolean;
 begin
   if auth.uid() is null then
     raise exception 'Debés iniciar sesión para dar me gusta.' using errcode = '42501';
   end if;
-  select exists(
-    select 1 from public.comment_likes
-    where comment_id = p_comment_id and user_id = auth.uid()
-  ) into v_exists;
+  if not exists(select 1 from public.comments where id = p_comment_id and not is_deleted) then
+    raise exception 'Comentario no encontrado.' using errcode = 'P0002';
+  end if;
 
-  if v_exists then
-    delete from public.comment_likes where comment_id = p_comment_id and user_id = auth.uid();
-  else
-    insert into public.comment_likes (comment_id, user_id) values (p_comment_id, auth.uid());
+  -- Borrar primero y, si no habia nada, insertar con "on conflict do nothing":
+  -- dos clics simultaneos ya no chocan contra la clave primaria.
+  delete from public.comment_likes where comment_id = p_comment_id and user_id = auth.uid();
+  v_removed := found;
+  if not v_removed then
+    insert into public.comment_likes (comment_id, user_id) values (p_comment_id, auth.uid())
+    on conflict do nothing;
   end if;
 
   return query
-    select not v_exists, (select count(*) from public.comment_likes where comment_id = p_comment_id);
+    select not v_removed, (select count(*) from public.comment_likes where comment_id = p_comment_id);
 end;
 $$;
 
@@ -419,24 +465,24 @@ security definer
 set search_path = public
 as $$
 declare
-  v_exists boolean;
+  v_removed boolean;
 begin
   if auth.uid() is null then
     raise exception 'Debés iniciar sesión para dar me gusta.' using errcode = '42501';
   end if;
-  select exists(
-    select 1 from public.article_likes
-    where article_id = p_article_id and user_id = auth.uid()
-  ) into v_exists;
+  if not public.is_valid_article_id(p_article_id) then
+    raise exception 'Artículo inválido.' using errcode = '22023';
+  end if;
 
-  if v_exists then
-    delete from public.article_likes where article_id = p_article_id and user_id = auth.uid();
-  else
-    insert into public.article_likes (article_id, user_id) values (p_article_id, auth.uid());
+  delete from public.article_likes where article_id = p_article_id and user_id = auth.uid();
+  v_removed := found;
+  if not v_removed then
+    insert into public.article_likes (article_id, user_id) values (p_article_id, auth.uid())
+    on conflict do nothing;
   end if;
 
   return query
-    select not v_exists, (select count(*) from public.article_likes where article_id = p_article_id);
+    select not v_removed, (select count(*) from public.article_likes where article_id = p_article_id);
 end;
 $$;
 
@@ -480,6 +526,263 @@ $$;
 
 revoke execute on function public.set_communication_consent(boolean) from public, anon;
 grant execute on function public.set_communication_consent(boolean) to authenticated;
+
+-- ============================================================================
+-- 9. Endurecimiento de `profiles`: que columnas se leen y se escriben
+-- ============================================================================
+-- La policy "profiles_select_public" deja leer TODAS las filas (hace falta
+-- para mostrar nombre/avatar en los comentarios), pero sin esto tambien
+-- dejaba leer TODAS las columnas: nombre y apellido, localidad, estudios,
+-- consentimientos... a cualquiera con la anon key (que es publica). RLS
+-- filtra filas, no columnas, asi que el filtro de columnas se hace con
+-- privilegios de Postgres:
+-- - Lectura publica: solo lo que se muestra en un comentario.
+-- - Escritura: solo los campos que el usuario edita desde /perfil. Las
+--   columnas legales (terms_*, communication_*) y el rol quedan fuera:
+--   se cambian unicamente via las RPC accept_terms() y
+--   set_communication_consent(), que ponen la fecha del lado del servidor.
+-- - El dueño lee su fila completa con get_my_profile().
+-- OJO: una columna nueva que se agregue a profiles NO queda legible ni
+-- editable por la API hasta sumarla a estos grants (seguro por defecto).
+revoke select, insert, update, delete on public.profiles from anon, authenticated;
+grant select (id, display_name, username, role, avatar_type, avatar_preset_id, avatar_url, bio, created_at)
+  on public.profiles to anon, authenticated;
+grant update (display_name, username, first_name, last_name, avatar_type, avatar_preset_id, avatar_url,
+              bio, location, province, education_level, education_institution, education_field)
+  on public.profiles to authenticated;
+
+-- avatar_url solo puede apuntar a una foto subida por el propio usuario a
+-- su carpeta del bucket "avatars" (antes se podia poner cualquier URL).
+create or replace function public.validate_profile_avatar()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if auth.role() = 'authenticated' then
+    if new.avatar_url is distinct from old.avatar_url and new.avatar_url is not null
+       and new.avatar_url !~ ('^https://[a-z0-9]+\.supabase\.co/storage/v1/object/public/avatars/'
+                              || auth.uid()::text || '/[A-Za-z0-9._-]+$') then
+      raise exception 'URL de avatar no permitida.' using errcode = '22023';
+    end if;
+    if new.avatar_preset_id is distinct from old.avatar_preset_id
+       and new.avatar_preset_id !~ '^avatar-[0-9]{1,3}$' then
+      raise exception 'Avatar inválido.' using errcode = '22023';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_validate_profile_avatar on public.profiles;
+create trigger trg_validate_profile_avatar
+  before update on public.profiles
+  for each row execute function public.validate_profile_avatar();
+
+create or replace function public.get_my_profile()
+returns public.profiles
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select * from public.profiles where id = auth.uid();
+$$;
+
+revoke execute on function public.get_my_profile() from public, anon;
+grant execute on function public.get_my_profile() to authenticated;
+
+create or replace function public.accept_terms(p_version text)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_profile public.profiles;
+begin
+  if auth.uid() is null then
+    raise exception 'Debés iniciar sesión.' using errcode = '42501';
+  end if;
+  if p_version is null or char_length(p_version) > 40 then
+    raise exception 'Versión de términos inválida.' using errcode = '22023';
+  end if;
+  update public.profiles
+    set terms_accepted = true, terms_accepted_at = now(), terms_version = p_version
+    where id = auth.uid()
+    returning * into v_profile;
+  return v_profile;
+end;
+$$;
+
+revoke execute on function public.accept_terms(text) from public, anon;
+grant execute on function public.accept_terms(text) to authenticated;
+
+-- ============================================================================
+-- 10. Vistas de articulos (ranking "Lo más leído" compartido)
+-- ============================================================================
+-- Antes las vistas vivian en el localStorage de cada navegador, asi que
+-- cada visitante veia un ranking armado solo con lo que leyo el mismo.
+-- El navegador sigue evitando recontar la misma nota dentro de 30 minutos
+-- (js/stats.js); esto es un contador publico, no una metrica de auditoria.
+create table if not exists public.article_views (
+  article_id text primary key check (public.is_valid_article_id(article_id)),
+  views bigint not null default 0,
+  updated_at timestamptz not null default now()
+);
+alter table public.article_views enable row level security;
+
+drop policy if exists "article_views_select_public" on public.article_views;
+create policy "article_views_select_public" on public.article_views
+  for select using (true);
+-- Sin policies de escritura: solo via record_article_view().
+
+create or replace function public.record_article_view(p_article_id text)
+returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_views bigint;
+begin
+  if not public.is_valid_article_id(p_article_id) then
+    raise exception 'Artículo inválido.' using errcode = '22023';
+  end if;
+  -- Tope de filas: evita que alguien llene la tabla inventando ids.
+  if not exists(select 1 from public.article_views where article_id = p_article_id)
+     and (select count(*) from public.article_views) >= 1000 then
+    return 0;
+  end if;
+  insert into public.article_views as v (article_id, views) values (p_article_id, 1)
+  on conflict (article_id) do update set views = v.views + 1, updated_at = now()
+  returning v.views into v_views;
+  return v_views;
+end;
+$$;
+
+revoke execute on function public.record_article_view(text) from public;
+grant execute on function public.record_article_view(text) to anon, authenticated;
+
+-- ============================================================================
+-- 11. Suscripciones al newsletter (formulario de /abramos-debate.html)
+-- ============================================================================
+-- La tabla no se puede leer desde la web (sin policies de select): los mails
+-- se consultan solo desde el dashboard de Supabase (Table Editor).
+create table if not exists public.newsletter_subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null check (char_length(email) <= 254 and email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  created_at timestamptz not null default now()
+);
+create unique index if not exists newsletter_subscribers_email_idx on public.newsletter_subscribers (lower(email));
+alter table public.newsletter_subscribers enable row level security;
+revoke all on public.newsletter_subscribers from anon, authenticated;
+
+create or replace function public.subscribe_newsletter(p_email text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_email text := lower(trim(p_email));
+begin
+  if v_email is null or char_length(v_email) > 254 or v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then
+    raise exception 'Ingresá un email válido.' using errcode = '22023';
+  end if;
+  -- Si ya estaba suscripto no se informa nada distinto: no revela que
+  -- mails estan en la lista.
+  insert into public.newsletter_subscribers (email) values (v_email) on conflict do nothing;
+end;
+$$;
+
+revoke execute on function public.subscribe_newsletter(text) from public;
+grant execute on function public.subscribe_newsletter(text) to anon, authenticated;
+
+-- Las admins ven y dan de baja suscriptores desde el panel de moderacion.
+grant select, delete on public.newsletter_subscribers to authenticated;
+drop policy if exists "newsletter_admin_select" on public.newsletter_subscribers;
+create policy "newsletter_admin_select" on public.newsletter_subscribers
+  for select using (public.is_admin());
+drop policy if exists "newsletter_admin_delete" on public.newsletter_subscribers;
+create policy "newsletter_admin_delete" on public.newsletter_subscribers
+  for delete using (public.is_admin());
+
+-- ============================================================================
+-- 12. Reportes de comentarios
+-- ============================================================================
+-- Cualquier usuario logueado puede reportar un comentario ajeno (una vez por
+-- comentario). comments.is_reported se mantiene sincronizado para filtrar
+-- rapido en el panel; el detalle (quien y por que) vive en comment_reports,
+-- que solo ven las admins (y cada quien sus propios reportes).
+create table if not exists public.comment_reports (
+  comment_id uuid not null references public.comments(id) on delete cascade,
+  reporter_id uuid not null references public.profiles(id) on delete cascade,
+  reason text check (reason is null or char_length(reason) <= 300),
+  created_at timestamptz not null default now(),
+  primary key (comment_id, reporter_id)
+);
+create index if not exists comment_reports_reporter_created_idx on public.comment_reports(reporter_id, created_at);
+alter table public.comment_reports enable row level security;
+
+drop policy if exists "comment_reports_select_own_or_admin" on public.comment_reports;
+create policy "comment_reports_select_own_or_admin" on public.comment_reports
+  for select using (reporter_id = auth.uid() or public.is_admin());
+-- Sin policies de escritura: todo pasa por report_comment()/dismiss_comment_reports().
+
+create or replace function public.report_comment(p_comment_id uuid, p_reason text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_comment public.comments;
+  v_reason text := nullif(trim(coalesce(p_reason, '')), '');
+begin
+  if auth.uid() is null then
+    raise exception 'Debés iniciar sesión para reportar.' using errcode = '42501';
+  end if;
+  select * into v_comment from public.comments where id = p_comment_id;
+  if v_comment.id is null or v_comment.is_deleted then
+    raise exception 'Comentario no encontrado.' using errcode = 'P0002';
+  end if;
+  if v_comment.author_id = auth.uid() then
+    raise exception 'No podés reportar tu propio comentario.' using errcode = '22023';
+  end if;
+  if char_length(v_reason) > 300 then
+    raise exception 'El motivo puede tener hasta 300 caracteres.' using errcode = '22023';
+  end if;
+  if (select count(*) from public.comment_reports
+      where reporter_id = auth.uid() and created_at > now() - interval '1 hour') >= 10 then
+    raise exception 'Enviaste muchos reportes seguidos. Volvé a intentar más tarde.' using errcode = 'P0001';
+  end if;
+  insert into public.comment_reports (comment_id, reporter_id, reason)
+  values (p_comment_id, auth.uid(), v_reason)
+  on conflict do nothing;
+  update public.comments set is_reported = true where id = p_comment_id;
+end;
+$$;
+
+create or replace function public.dismiss_comment_reports(p_comment_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Solo una administradora puede descartar reportes.' using errcode = '42501';
+  end if;
+  delete from public.comment_reports where comment_id = p_comment_id;
+  update public.comments set is_reported = false where id = p_comment_id;
+end;
+$$;
+
+revoke execute on function public.report_comment(uuid, text) from public, anon;
+revoke execute on function public.dismiss_comment_reports(uuid) from public, anon;
+grant execute on function public.report_comment(uuid, text) to authenticated;
+grant execute on function public.dismiss_comment_reports(uuid) to authenticated;
 
 -- ============================================================================
 -- PASO MANUAL — promover tu cuenta a administradora "ActivemosJoven"

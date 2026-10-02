@@ -1,0 +1,7 @@
+# Archivos del repo que no tienen que publicarse en el sitio
+.claude
+supabase
+assets/images/sin-usar
+partials
+scripts
+README.md

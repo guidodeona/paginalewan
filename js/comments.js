@@ -44,6 +44,14 @@
     return parts.map((p) => p[0]).join('').toUpperCase();
   }
 
+  // Los errores que lanzan las RPC de supabase/schema.sql ya vienen con un
+  // mensaje pensado para mostrar (ej. el limite anti-spam). Cualquier otro
+  // error (red, etc.) cae en el mensaje generico.
+  const USER_FACING_CODES = ['22023', '42501', 'P0001', 'P0002'];
+  function errorMessage(error, fallback) {
+    return error && USER_FACING_CODES.includes(error.code) && error.message ? error.message : fallback;
+  }
+
   function countDescendants(comments, parentId) {
     const children = comments.filter((c) => c.parent_id === parentId);
     return children.reduce((sum, c) => sum + 1 + countDescendants(comments, c.id), 0);
@@ -69,7 +77,15 @@
         if (me && like.user_id === me.id) likedByMe.add(like.comment_id);
       });
     }
-    return { comments, likesByComment, likedByMe };
+    // Reportes propios (RLS solo devuelve los de quien consulta). Si la tabla
+    // todavia no existe, simplemente no se marca ninguno como reportado.
+    const reportedByMe = new Set();
+    const me = window.ActivemosAuth.getUser();
+    if (me && ids.length) {
+      const { data: reports } = await client().from('comment_reports').select('comment_id').eq('reporter_id', me.id).in('comment_id', ids);
+      (reports || []).forEach((r) => reportedByMe.add(r.comment_id));
+    }
+    return { comments, likesByComment, likedByMe, reportedByMe };
   }
 
   // --- Render ----------------------------------------------------------------
@@ -104,8 +120,14 @@
     return comment.author_id === user.id || (profile && profile.role === 'admin');
   }
 
+  function canReport(comment) {
+    const user = window.ActivemosAuth.getUser();
+    const profile = window.ActivemosAuth.getProfile();
+    return Boolean(user) && comment.author_id !== user.id && !(profile && profile.role === 'admin');
+  }
+
   function buildCommentNode(comment, state, depth, articleId, section) {
-    const { comments, likesByComment, likedByMe } = state;
+    const { comments, likesByComment, likedByMe, reportedByMe } = state;
     const li = document.createElement('li');
     li.className = 'comment-item';
 
@@ -192,6 +214,20 @@
         actions.appendChild(deleteBtn);
       }
 
+      if (canReport(comment)) {
+        const reportBtn = document.createElement('button');
+        reportBtn.type = 'button';
+        reportBtn.className = 'comment-report-btn';
+        if (reportedByMe.has(comment.id)) {
+          reportBtn.textContent = 'Reportado';
+          reportBtn.disabled = true;
+        } else {
+          reportBtn.textContent = 'Reportar';
+          reportBtn.addEventListener('click', () => toggleReportForm(li, comment, reportBtn));
+        }
+        actions.appendChild(reportBtn);
+      }
+
       const childCount = countDescendants(comments, comment.id);
       if (childCount > 0) {
         const countEl = document.createElement('span');
@@ -232,22 +268,64 @@
     const form = document.createElement('form');
     form.className = 'comment-form comment-edit-form';
     form.innerHTML = `
-      <div class="comment-form-row"><textarea name="text" maxlength="500" rows="2" required>${comment.body.replace(/</g, '&lt;')}</textarea></div>
+      <div class="comment-form-row"><textarea name="text" maxlength="500" rows="2" required></textarea></div>
       <div class="comment-form-actions">
         <p class="comment-form-feedback" role="status" aria-live="polite"></p>
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
     `;
+    // .value (no interpolado en el HTML de arriba): el texto queda tal cual,
+    // sin riesgo de que "&lt;" o "</textarea>" se interpreten como markup.
+    form.querySelector('textarea').value = comment.body;
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const feedback = form.querySelector('.comment-form-feedback');
       const text = form.querySelector('textarea').value.trim();
       if (text.length < 3 || text.length > 500) { feedback.textContent = 'El comentario tiene que tener entre 3 y 500 caracteres.'; return; }
       const { error } = await client().rpc('edit_comment', { p_comment_id: comment.id, p_body: text });
-      if (error) { feedback.textContent = 'No se pudo guardar. Volvé a intentar.'; return; }
+      if (error) { feedback.textContent = errorMessage(error, 'No se pudo guardar. Volvé a intentar.'); return; }
       refresh(articleId, section);
     });
     bodyEl.insertAdjacentElement('afterend', form);
+    form.querySelector('textarea').focus();
+  }
+
+  function toggleReportForm(li, comment, reportBtn) {
+    const slot = li.querySelector(':scope > .comment-reply-slot');
+    const existing = slot.querySelector('.comment-report-form');
+    if (existing) { existing.remove(); return; }
+    const form = document.createElement('form');
+    form.className = 'comment-form comment-form--reply comment-report-form';
+    form.innerHTML = `
+      <div class="comment-form-row"><textarea name="reason" maxlength="300" rows="2" placeholder="¿Por qué lo reportás? (opcional)"></textarea></div>
+      <div class="comment-form-actions">
+        <p class="comment-form-feedback" role="status" aria-live="polite"></p>
+        <button type="button" class="comment-edit-btn" data-report-cancel>Cancelar</button>
+        <button type="submit" class="btn btn-outline-pink">Enviar reporte</button>
+      </div>
+    `;
+    form.querySelector('[data-report-cancel]').addEventListener('click', () => form.remove());
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const feedback = form.querySelector('.comment-form-feedback');
+      const submit = form.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      const { error } = await client().rpc('report_comment', { p_comment_id: comment.id, p_reason: form.reason.value.trim() });
+      if (error) {
+        submit.disabled = false;
+        feedback.textContent = errorMessage(error, 'No se pudo enviar el reporte. Volvé a intentar.');
+        return;
+      }
+      reportBtn.textContent = 'Reportado';
+      reportBtn.disabled = true;
+      form.innerHTML = '';
+      const thanks = document.createElement('p');
+      thanks.className = 'comment-form-feedback';
+      thanks.setAttribute('role', 'status');
+      thanks.textContent = 'Gracias por avisar. El equipo de moderación lo va a revisar.';
+      form.appendChild(thanks);
+    });
+    slot.appendChild(form);
     form.querySelector('textarea').focus();
   }
 
@@ -277,7 +355,7 @@
       const text = form.querySelector('textarea').value.trim();
       if (text.length < 3 || text.length > 500) { feedback.textContent = 'El comentario tiene que tener entre 3 y 500 caracteres.'; return; }
       const { error } = await client().rpc('create_comment', { p_article_id: articleId, p_parent_id: parentId || null, p_body: text });
-      if (error) { feedback.textContent = 'No se pudo publicar. Volvé a intentar.'; return; }
+      if (error) { feedback.textContent = errorMessage(error, 'No se pudo publicar. Volvé a intentar.'); return; }
       refresh(articleId, section);
     });
     return form;

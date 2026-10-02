@@ -1,12 +1,11 @@
 /*
  * Capa de estadisticas de articulos: vistas, tiempo de lectura y ranking.
  *
- * Persistencia actual: localStorage (por navegador, no compartida entre
- * visitantes reales). Queda aislada en readStore/writeStore/getViews/
- * recordView a proposito: el dia que haya backend, esas cuatro funciones
- * son el UNICO lugar que hay que reemplazar por llamadas a una API
- * (ej. GET/POST /api/articulos/:id/vistas) — el resto del archivo, el HTML
- * y el CSS no necesitan cambios.
+ * Persistencia: tabla article_views en Supabase (compartida entre todos los
+ * visitantes; ver seccion 10 de supabase/schema.sql). localStorage se sigue
+ * usando para no recontar la misma nota dentro de 30 minutos, y como
+ * respaldo si Supabase no responde (en ese caso el numero es solo el de
+ * este navegador, como antes).
  */
 (() => {
   'use strict';
@@ -26,25 +25,64 @@
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* localStorage no disponible */ }
   }
 
-  function getViews(articleId) {
+  function client() {
+    return window.ActivemosAuth && window.ActivemosAuth.isConfigured() ? window.ActivemosAuth.getClient() : null;
+  }
+
+  // supabase-js reintenta varias veces si falla la red (~10 s en total). Para
+  // no dejar el ranking cargando tanto tiempo, despues de 3 s se usa el
+  // respaldo local.
+  const TIMEOUT_MS = 3000;
+  function withTimeout(promise) {
+    return Promise.race([
+      promise,
+      new Promise((resolve) => setTimeout(() => resolve({ data: null, error: new Error('timeout') }), TIMEOUT_MS)),
+    ]);
+  }
+
+  function getLocalViews(articleId) {
     return readStore(VIEWS_KEY)[articleId] || 0;
   }
 
-  function recordView(articleId) {
+  async function getViews(articleId) {
+    const c = client();
+    if (c) {
+      const { data, error } = await withTimeout(c.from('article_views').select('views').eq('article_id', articleId).maybeSingle());
+      if (!error) return data ? Number(data.views) : 0;
+    }
+    return getLocalViews(articleId);
+  }
+
+  async function recordView(articleId) {
     const lastSeen = readStore(LAST_SEEN_KEY);
     const now = Date.now();
     if (lastSeen[articleId] && now - lastSeen[articleId] < DEBOUNCE_MS) {
       return getViews(articleId);
     }
+    lastSeen[articleId] = now;
+    writeStore(LAST_SEEN_KEY, lastSeen);
     const store = readStore(VIEWS_KEY);
     store[articleId] = (store[articleId] || 0) + 1;
     writeStore(VIEWS_KEY, store);
-    lastSeen[articleId] = now;
-    writeStore(LAST_SEEN_KEY, lastSeen);
+
+    const c = client();
+    if (c) {
+      const { data, error } = await withTimeout(c.rpc('record_article_view', { p_article_id: articleId }));
+      if (!error) return Number(data) || 0;
+    }
     return store[articleId];
   }
 
-  function getAllViews() {
+  async function getAllViews() {
+    const c = client();
+    if (c) {
+      const { data, error } = await withTimeout(c.from('article_views').select('article_id, views'));
+      if (!error) {
+        const views = {};
+        (data || []).forEach((row) => { views[row.article_id] = Number(row.views); });
+        return views;
+      }
+    }
     return readStore(VIEWS_KEY);
   }
 
@@ -77,12 +115,12 @@
   const ICON_CLOCK = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
   const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
 
-  function renderArticleMeta() {
+  async function renderArticleMeta() {
     const mount = document.querySelector('[data-article-id]');
     if (!mount) return;
     const articleId = mount.getAttribute('data-article-id');
     const readingMinutes = mount.getAttribute('data-reading-minutes') || '—';
-    const views = recordView(articleId);
+    const views = await recordView(articleId);
     const metaExtra = mount.querySelector('.article-meta-extra');
     if (!metaExtra) return;
     metaExtra.innerHTML =
@@ -99,8 +137,7 @@
     const mounts = document.querySelectorAll('[data-trending-list]');
     if (!mounts.length) return;
     renderTrendingSkeleton(mounts);
-    const articles = await loadArticles();
-    const views = getAllViews();
+    const [articles, views] = await Promise.all([loadArticles(), getAllViews()]);
     const ranked = articles
       .map((a) => ({ ...a, views: views[a.id] || 0 }))
       .sort((a, b) => b.views - a.views)

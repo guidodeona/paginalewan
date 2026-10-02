@@ -2,7 +2,8 @@
  * Paginas de categoria de "Abramos debate" (Politica/Sociedad/Economia/
  * Juventudes). Un solo archivo para las 4 paginas: cada HTML solo declara
  * su categoria via [data-category-list], y este script filtra
- * data/articles.json por ese valor y arma las tarjetas. Agregar un articulo
+ * data/articles.json por ese valor y arma las tarjetas. Un articulo aparece
+ * en su "category" principal y tambien en cada "secondaryCategories". Agregar un articulo
  * nuevo a esa categoria en el futuro no requiere tocar ningun HTML ni JS,
  * solo sumar la entrada al JSON (mismo patron que stats.js/activities.js).
  */
@@ -28,7 +29,11 @@
     return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  function buildCard(article) {
+  function belongsTo(article, category) {
+    return article.category === category || (article.secondaryCategories || []).includes(category);
+  }
+
+  function buildCard(article, category) {
     const card = document.createElement('article');
     card.className = 'card reveal';
 
@@ -43,7 +48,7 @@
     thumb.appendChild(img);
     const tag = document.createElement('span');
     tag.className = `card-tag card-tag--${article.categoryColor || 'pink'}`;
-    tag.textContent = article.category;
+    tag.textContent = category;
     thumb.appendChild(tag);
     card.appendChild(thumb);
 
@@ -70,7 +75,14 @@
   }
 
   function renderEmpty(mount, category) {
-    mount.innerHTML = `<p class="media-empty">Todavía no publicamos artículos en <strong>${category}</strong>. Pronto vamos a sumar contenido acá.</p>`;
+    mount.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'media-empty';
+    p.append('Todavía no publicamos artículos en ');
+    const strong = document.createElement('strong');
+    strong.textContent = category;
+    p.append(strong, '. Pronto vamos a sumar contenido acá.');
+    mount.appendChild(p);
   }
 
   async function init() {
@@ -80,7 +92,9 @@
     const countEl = document.querySelector('[data-category-count]');
 
     const articles = await loadArticles();
-    const matches = articles.filter((a) => a.category === category);
+    const matches = articles
+      .filter((a) => belongsTo(a, category))
+      .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
 
     if (countEl) countEl.textContent = String(matches.length);
 
@@ -90,7 +104,7 @@
     }
 
     mount.innerHTML = '';
-    matches.forEach((article) => mount.appendChild(buildCard(article)));
+    matches.forEach((article) => mount.appendChild(buildCard(article, category)));
 
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => {
