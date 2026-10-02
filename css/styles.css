@@ -642,15 +642,15 @@ h1, h2, h3,
 /* La imagen va en position: absolute para que NO defina la altura de la
    tarjeta: con una foto vertical, la tarjeta se estiraba a mas de 700px.
    Ahora la altura la marca el texto (con un minimo) y la foto se recorta. */
-.featured-card-thumb { position: relative; min-height: 420px; }
+.featured-card-thumb { position: relative; min-height: 500px; }
 .featured-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
 .featured-card-body { padding: clamp(1.75rem, 3.5vw, 2.75rem); display: flex; flex-direction: column; justify-content: center; }
 .featured-card-eyebrow {
   font-family: var(--font-heading); font-size: 0.76rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-rosa-text); margin-bottom: 0.6rem;
 }
-.featured-card-body h2 { font-size: clamp(1.35rem, 2.8vw, 2rem); font-weight: 700; line-height: 1.25; margin-bottom: 0.75rem; }
-.featured-card-excerpt { color: var(--text-muted); line-height: 1.6; font-size: 1.02rem; margin-bottom: 1.25rem; }
+.featured-card-body h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 700; line-height: 1.25; margin-bottom: 0.75rem; }
+.featured-card-excerpt { color: var(--text-muted); line-height: 1.6; font-size: 1.08rem; margin-bottom: 1.25rem; }
 .featured-card-authors {
   display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;
   font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
@@ -661,7 +661,7 @@ h1, h2, h3,
 .featured-card .btn { align-self: flex-start; margin-top: 0.5rem; }
 @media (max-width: 860px) {
   .featured-card { grid-template-columns: 1fr; }
-  .featured-card-thumb { min-height: 220px; }
+  .featured-card-thumb { min-height: 260px; }
 }
 
 /* Categorías + Más leídos */
