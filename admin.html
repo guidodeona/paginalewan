@@ -33,12 +33,30 @@
         <li><a href="somos.html">Somos</a></li>
         <li><a href="abramos-debate.html">Abramos debate</a></li>
         <li><a href="actividades.html">Actividades</a></li>
-        <li><a href="multimedia.html">Multimedia</a></li>
+        <li class="has-dropdown">
+          <button type="button" class="dropdown-toggle" aria-expanded="false" aria-controls="dropdownRecursos">
+            Recursos
+            <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <ul class="dropdown" id="dropdownRecursos">
+            <li><a href="multimedia.html#recursos">Materiales</a></li>
+            <li><a href="multimedia.html#recursos">Guías</a></li>
+            <li><a href="abramos-debate.html">Noticias</a></li>
+            <li><a href="multimedia.html">Multimedia</a></li>
+          </ul>
+        </li>
         <li><a href="index.html#contacto">Contacto</a></li>
       </ul>
     </nav>
 
-    <div class="header-social"></div>
+    <div class="header-social">
+      <a href="https://www.instagram.com/activemos.joven?igsh=MTduNTV5eHVwM2dmYw%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener" class="social-btn social-btn--pink" aria-label="Seguinos en Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>
+      </a>
+      <a href="https://youtube.com/@activemosjoven?si=oqGbiL9UH4lax87C" target="_blank" rel="noopener" class="social-btn social-btn--orange" aria-label="Seguinos en YouTube">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5l6 2.5-6 2.5z" fill="currentColor"/></svg>
+      </a>
+    </div>
 
     <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro">
       <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -67,6 +85,12 @@
       </div>
 
       <div data-admin-panel hidden>
+        <div class="media-tabs" role="tablist" aria-label="Secciones del panel">
+          <button type="button" class="media-tab" role="tab" id="admin-tab-comments" aria-controls="admin-panel-comments" aria-selected="true" data-admin-tab>Comentarios</button>
+          <button type="button" class="media-tab" role="tab" id="admin-tab-newsletter" aria-controls="admin-panel-newsletter" aria-selected="false" data-admin-tab tabindex="-1">Newsletter</button>
+        </div>
+
+        <div id="admin-panel-comments" role="tabpanel" aria-labelledby="admin-tab-comments">
         <div class="activities-filters" role="group" aria-label="Filtrar comentarios">
           <label class="filter-field">
             Buscar
@@ -82,6 +106,7 @@
             Estado
             <select data-admin-filter-status>
               <option value="active">Activos</option>
+              <option value="reported">Reportados</option>
               <option value="deleted">Eliminados</option>
               <option value="all">Todos</option>
             </select>
@@ -103,6 +128,26 @@
             <tbody data-admin-rows></tbody>
           </table>
         </div>
+        </div>
+
+        <div id="admin-panel-newsletter" role="tabpanel" aria-labelledby="admin-tab-newsletter" hidden>
+          <div class="admin-newsletter-bar">
+            <p data-newsletter-count>Cargando suscripciones…</p>
+            <button type="button" class="btn btn-primary" data-newsletter-export>Descargar CSV</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Email</th>
+                  <th scope="col">Fecha de suscripción</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody data-newsletter-rows></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -117,19 +162,19 @@
     </div>
 
     <nav class="footer-col" aria-label="Navegación">
-      <h3>Navegación</h3>
+      <h2>Navegación</h2>
       <ul>
         <li><a href="index.html#inicio">Inicio</a></li>
         <li><a href="somos.html">Somos</a></li>
         <li><a href="abramos-debate.html">Abramos debate</a></li>
         <li><a href="actividades.html">Actividades</a></li>
-        <li><a href="index.html#">Recursos</a></li>
+        <li><a href="multimedia.html">Recursos</a></li>
         <li><a href="index.html#contacto">Contacto</a></li>
       </ul>
     </nav>
 
     <nav class="footer-col" aria-label="Recursos">
-      <h3>Recursos</h3>
+      <h2>Recursos</h2>
       <ul>
         <li><a href="multimedia.html#recursos">Materiales</a></li>
         <li><a href="multimedia.html#recursos">Guías</a></li>
@@ -139,7 +184,7 @@
     </nav>
 
     <div class="footer-col">
-      <h3>Seguinos</h3>
+      <h2>Seguinos</h2>
       <div class="social-row">
         <a href="https://www.instagram.com/activemos.joven?igsh=MTduNTV5eHVwM2dmYw%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener" class="social-btn social-btn--pink" aria-label="Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>
@@ -155,8 +200,10 @@
       <svg class="doodle doodle-heart" width="26" height="24" viewBox="0 0 34 30" aria-hidden="true"><path d="M17 28C6 20 1 13 1 8a7 7 0 0113-4 7 7 0 0113 4c0 5-5 12-16 20z" fill="none" stroke="var(--color-rosa)" stroke-width="2.5"/></svg>
     </div>
   </div>
+
   <div class="container footer-bottom">
     <p>&copy; <span id="year"></span> ActivemosJoven. Todos los derechos reservados.</p>
+    <p><a href="terminos-y-condiciones.html">Términos y Condiciones</a></p>
   </div>
 </footer>
 

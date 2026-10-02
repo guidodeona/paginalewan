@@ -140,7 +140,7 @@
       av.setAttribute('aria-hidden', 'true');
       authorsRow.appendChild(av);
       const names = document.createElement('span');
-      names.textContent = article.authors.length > 1 ? `${article.authors[0]} y otro/a` : article.authors[0];
+      names.textContent = article.authors.join(' y ');
       authorsRow.appendChild(names);
       body.appendChild(authorsRow);
     }
@@ -174,9 +174,33 @@
   function initNewsletterForm() {
     const form = document.querySelector('[data-newsletter-form]');
     if (!form) return;
-    form.addEventListener('submit', (e) => {
+    // Guarda el mail via subscribe_newsletter() (seccion 11 de
+    // supabase/schema.sql). La lista solo se puede leer desde el dashboard.
+    const showMessage = (text) => {
+      let msg = form.querySelector('.debate-newsletter-feedback');
+      if (!msg) {
+        msg = document.createElement('p');
+        msg.className = 'debate-newsletter-feedback';
+        msg.setAttribute('role', 'status');
+        form.appendChild(msg);
+      }
+      msg.textContent = text;
+    };
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      form.innerHTML = '<p class="debate-newsletter-feedback">¡Gracias! Todavía estamos conectando esta suscripción — mientras tanto, seguinos en Instagram para no perderte nada.</p>';
+      const auth = window.ActivemosAuth;
+      const client = auth && auth.isConfigured() ? auth.getClient() : null;
+      const button = form.querySelector('button[type="submit"]');
+      if (!client) { showMessage('La suscripción no está disponible en este momento. Seguinos en Instagram para no perderte nada.'); return; }
+      button.disabled = true;
+      const { error } = await client.rpc('subscribe_newsletter', { p_email: form.email.value.trim() });
+      button.disabled = false;
+      if (error) {
+        showMessage(error.code === '22023' ? 'Ingresá un email válido.' : 'No pudimos registrar tu suscripción. Volvé a intentar en un rato.');
+        return;
+      }
+      form.textContent = '';
+      showMessage('¡Gracias! Te vamos a avisar por mail cuando publiquemos algo nuevo.');
     });
   }
 
@@ -230,7 +254,8 @@
         const q = normalize(searchInput.value);
         if (!q) { render(rest); return; }
         const filtered = rest.filter((a) =>
-          normalize(a.title).includes(q) || normalize(a.category).includes(q)
+          [a.title, a.excerpt, a.category, ...(a.secondaryCategories || []), ...(a.authors || [])]
+            .some((field) => field && normalize(field).includes(q))
         );
         render(filtered);
       });

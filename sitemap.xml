@@ -31,6 +31,42 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://activemosjoven.vercel.app/terminos-y-condiciones.html</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://activemosjoven.vercel.app/articulos/ciberespacio-soberania-argentina.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://activemosjoven.vercel.app/articulos/la-cuenta-que-la-politica-no-supo-hacer.html</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://activemosjoven.vercel.app/articulos/que-paso-despues-del-6-de-agosto.html</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://activemosjoven.vercel.app/articulos/soberania-o-remate.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://activemosjoven.vercel.app/tematicas/economia.html</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://activemosjoven.vercel.app/tematicas/politica.html</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>weekly</changefreq>
@@ -43,39 +79,9 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://activemosjoven.vercel.app/tematicas/economia.html</loc>
-    <lastmod>2026-07-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://activemosjoven.vercel.app/tematicas/tecnologia.html</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://activemosjoven.vercel.app/articulos/la-cuenta-que-la-politica-no-supo-hacer.html</loc>
-    <lastmod>2026-07-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://activemosjoven.vercel.app/articulos/soberania-o-remate.html</loc>
-    <lastmod>2026-07-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://activemosjoven.vercel.app/articulos/ciberespacio-soberania-argentina.html</loc>
-    <lastmod>2026-08-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://activemosjoven.vercel.app/terminos-y-condiciones.html</loc>
-    <lastmod>2026-07-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
   </url>
 </urlset>

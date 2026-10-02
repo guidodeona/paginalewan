@@ -2,6 +2,8 @@
  * Agenda de Charlas y Actividades: carga data/activities.json, arma los
  * filtros de fecha/categoria/modalidad de forma dinamica (a partir de los
  * valores que existan en los datos, no hardcodeados) y renderiza las tarjetas.
+ * En el inicio ([data-home-activities]) muestra solo las proximas 3, asi una
+ * actividad que ya paso deja de aparecer como "proxima" sin tocar el HTML.
  *
  * Igual que en stats.js, loadActivities() es el unico punto que hay que
  * reemplazar por una llamada a una API real cuando exista backend.
@@ -144,8 +146,25 @@
 
   function renderList(section, activities) {
     const list = section.querySelector('[data-activities-list]');
-    const filtered = applyFilters(section, activities);
+    let filtered = applyFilters(section, activities);
     list.innerHTML = '';
+
+    // Si no hay nada proximo, en vez de dejar la pagina vacia se muestran
+    // las anteriores (con los mismos filtros de categoria/modalidad).
+    const timeSelect = section.querySelector('[data-filter="time"]');
+    if (!filtered.length && timeSelect.value === 'upcoming') {
+      timeSelect.value = 'past';
+      const past = applyFilters(section, activities).reverse();
+      timeSelect.value = 'upcoming';
+      if (past.length) {
+        const notice = document.createElement('p');
+        notice.className = 'activities-past-notice';
+        notice.textContent = 'Por ahora no hay actividades próximas. Mientras tanto, estas son las últimas que hicimos:';
+        list.appendChild(notice);
+        filtered = past;
+      }
+    }
+
     if (!filtered.length) {
       list.innerHTML = '<p class="activities-empty">No hay actividades que coincidan con estos filtros por ahora.</p>';
       return;
@@ -172,7 +191,64 @@
     list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
   }
 
+  // --- Inicio: proximas 3 actividades -------------------------------------------
+  function buildHomeItem(activity) {
+    const d = parseDate(activity.date);
+    const li = document.createElement('li');
+    li.className = 'activity-item';
+
+    const date = document.createElement('div');
+    date.className = 'activity-date';
+    const day = document.createElement('span');
+    day.className = 'day';
+    day.textContent = String(d.getDate()).padStart(2, '0');
+    const month = document.createElement('span');
+    month.className = 'month';
+    month.textContent = MONTHS_SHORT[d.getMonth()];
+    date.append(day, month);
+    li.appendChild(date);
+
+    const info = document.createElement('div');
+    info.className = 'activity-info';
+    const title = document.createElement('h3');
+    title.textContent = activity.title;
+    const when = document.createElement('p');
+    when.textContent = formatFullDate(activity.date, activity.time);
+    const where = document.createElement('p');
+    where.className = 'location';
+    where.textContent = activity.location;
+    info.append(title, when, where);
+    li.appendChild(info);
+    return li;
+  }
+
+  async function initHome(list) {
+    const today = todayStart();
+    const upcoming = (await loadActivities())
+      .filter((a) => parseDate(a.date) >= today)
+      .sort((a, b) => parseDate(a.date) - parseDate(b.date))
+      .slice(0, 3);
+    list.innerHTML = '';
+    if (!upcoming.length) {
+      const li = document.createElement('li');
+      li.className = 'activity-item activity-item--empty';
+      li.append('Estamos armando las próximas actividades. ');
+      const link = document.createElement('a');
+      link.href = 'https://www.instagram.com/activemos.joven';
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'Seguinos en Instagram';
+      li.append(link, ' para enterarte primero.');
+      list.appendChild(li);
+      return;
+    }
+    upcoming.forEach((a) => list.appendChild(buildHomeItem(a)));
+  }
+
   async function init() {
+    const homeList = document.querySelector('[data-home-activities]');
+    if (homeList) initHome(homeList);
+
     const section = document.querySelector('[data-activities-list]')?.closest('section');
     if (!section) return;
     renderSkeleton(section);

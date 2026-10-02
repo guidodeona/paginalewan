@@ -1,6 +1,18 @@
 {
   "articles": [
     {
+      "id": "que-paso-despues-del-6-de-agosto",
+      "url": "articulos/que-paso-despues-del-6-de-agosto.html",
+      "title": "¿Qué pasó después del 6 de agosto?",
+      "excerpt": "La movilización contra la Ley de Tierras logró cambios en el Senado, pero la discusión no terminó ahí: la extranjerización de tierras, el destino de los campos incendiados y un fallo de la Corte Suprema la volvieron a abrir.",
+      "image": "assets/images/que-paso-despues-del-6-de-agosto.jpeg",
+      "category": "Política",
+      "categoryColor": "pink",
+      "authors": ["Iona Velázquez"],
+      "publishDate": "2026-10-01",
+      "readingMinutes": 9
+    },
+    {
       "id": "la-cuenta-que-la-politica-no-supo-hacer",
       "url": "articulos/la-cuenta-que-la-politica-no-supo-hacer.html",
       "title": "La cuenta que la política no supo hacer",
@@ -31,6 +43,7 @@
       "excerpt": "Desde la teoría de Castells y Libicki hasta los casos de Stuxnet, Viasat y Volt Typhoon: por qué el ciberespacio se convirtió en el \"quinto dominio\" de la guerra, y qué implica para una Argentina cuyo tráfico de datos depende en un 81% de servidores en Estados Unidos.",
       "image": "assets/images/ciberespacio-soberania-argentina.jpeg",
       "category": "Política",
+      "secondaryCategories": ["Tecnología"],
       "categoryColor": "pink",
       "authors": ["Violeta Oficialdegui", "Guido de Oña"],
       "publishDate": "2026-08-04",

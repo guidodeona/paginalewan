@@ -315,7 +315,8 @@
 
   async function loadAndRenderProfile() {
     const user = window.ActivemosAuth.getUser();
-    const { data: profile } = await client().from('profiles').select('*').eq('id', user.id).single();
+    const profile = await window.ActivemosAuth.fetchOwnProfile();
+    if (!profile) { showGate('No pudimos cargar tu perfil. Recargá la página.', false); return false; }
     const { data: privateData } = await client().from('profile_private').select('phone, birth_date').eq('id', user.id).maybeSingle();
     const links = await loadSocialLinks(user.id);
 
@@ -323,6 +324,7 @@
     renderAvatarPresetGrid(profile);
     renderSocialLinks(links);
     fillForm(document.querySelector('[data-profile-form]'), profile, privateData);
+    return true;
   }
 
   function translateSaveError(error) {
@@ -406,7 +408,7 @@
     if (loadedForUserId === user.id) return;
 
     showGate('Cargando tu perfil...', false);
-    await loadAndRenderProfile();
+    if (!(await loadAndRenderProfile())) return;
     loadedForUserId = user.id;
     document.querySelector('[data-profile-gate]').hidden = true;
     document.querySelector('[data-profile-panel]').hidden = false;
